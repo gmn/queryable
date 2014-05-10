@@ -1,0 +1,33 @@
+{
+  "name": "queryable",
+  "version": "0.1.2",
+  "description": "A tiny, self-contained, NoSQL-like, database parser that stores to human-readable JSON string. Works in both Node and Web browser automagically. Fascillitates structured querying of an array of objects. Able to read/write from text file or gzip (anything that ends in .gz is interpreted as gzip).",
+  "main": "queryable.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "cd examples; node ./unit_tests.js;"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gmn/queryable.git"
+  },
+  "keywords": [
+    "nosql",
+    "sqlite",
+    "nosqlite",
+    "mongolite",
+    "mongodb",
+    "couchdb",
+    "json",
+    "node",
+    "javascript"
+  ],
+  "author": "Greg Guzman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gmn/queryable/issues"
+  },
+  "private": false 
+}

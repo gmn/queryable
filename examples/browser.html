@@ -1,0 +1,63 @@
+<!doctype html>
+<html><head>
+<script src="../queryable.js"></script>
+</head>
+
+<body>
+
+<button id="clear_btn" >Clear Cache</button>
+<div id="inforows"></div>
+<input id="db_ins_txt" type="text"></input>
+<button id="db_ins_btn" >Press Me</button>
+
+
+<script>
+var db = queryable.open("ThisPage"); 
+
+document.getElementById('clear_btn').onclick = function() {
+    db.remove();
+    draw_rows();
+};
+document.getElementById('db_ins_btn').onclick = function() {
+    var t = document.getElementById('db_ins_txt');
+    db.insert( {text:t.value,time:db.now()} );
+    t.value = "";
+    draw_rows();
+};
+// bind enter key body-wide to BUTTON
+document.body.onkeydown = function(e) {
+    if ( e.keyCode === 13 ) {
+        document.getElementById('db_ins_btn').onclick();
+    }
+};
+
+function rows_render()
+{
+    var res = db.find(/.*/).sort( {time:1} ); // all rows
+    var inforows = document.getElementById('inforows');
+
+    do {
+        var last = inforows.lastChild;
+        if ( !last )
+            break;
+        inforows.removeChild( last );
+    } while (1);
+
+    res._data.forEach(function(val,i){
+        var e = document.createElement('div');
+        e.innerHTML = val.text;
+        inforows.appendChild(e);
+    });
+}
+
+function draw_rows() {
+    rows_render();
+    db.save(); // save what we see
+}
+
+draw_rows();
+
+</script>
+
+</body>
+</html>
