@@ -1,4 +1,4 @@
-# Queryable
+# Queryable JS
 
 Queryable - A tiny, self-contained, single file database, written in pure Javascript, which aims to support a functional subset of MongoDB-like commands. It works seamlessly in both the client (browser) and the server (node.js).  Just include it in your project and go.  The database format is stored as human-readable JSON, one file per each database.
 
@@ -8,7 +8,9 @@ To use queryable.js in node.js, simply do:
 ```js
 var queryable = require( 'queryable' );     // or path to JS
 
-var db = queryable.open( path_to_db );      // ** There are multiple ways to open a db, but the simplest is a string:  
+var db = queryable.open( path_to_db );      // ** There are multiple ways 
+                                            //    to open a db, but the 
+                                            //    simplest is a string:  
 
 db.insert( {key:"Anything you want"} );     //    the path and filename to where you want it. Eg.: "/tmp/my_data.db"
 
