@@ -34,9 +34,8 @@
 
         // ex.2 - populate from string
         var queryable = require('queryable');
-        var db = queryable.open('database_name'); 
-    
-        var s = '[{"name":"Cathy"},{"name":"Carol","sex":"f"},{"name":"John","sex":"m"}]';
+        var str = '[{"name":"Cathy"},{"name":"Carol","sex":"f"},{"name":"John","sex":"m"}]';
+        var db = queryable.open( {"db_name":"Test1","data":str} ); 
 */
 
 (function(queryable) 

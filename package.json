@@ -24,10 +24,22 @@
     "node",
     "javascript"
   ],
-  "author": "Greg Guzman",
+  "author": { 
+    "name": "Greg Naughton",
+    "email": "greg@naughton.org"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/gmn/queryable/issues"
   },
-  "private": false 
+  "private": false,
+  "dependencies": { 
+    "gzbz": "0.2.1"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "readme": "# Queryable JS\n\nQueryable - A tiny, self-contained, single file database, written in pure Javascript, which aims to support a functional subset of MongoDB-like commands. It works seamlessly in both the client (browser) and the server (node.js).  Just include it in your project and go.  The database format is stored as human-readable JSON, one file per each database.\n\n## Examples\n\nTo use queryable.js in node.js, simply do:\n```js\nvar queryable = require( 'queryable' );     // or path to JS\n\nvar db = queryable.open( path_to_db );      // ** There are multiple ways \n                                            //    to open a db, but the \n                                            //    simplest is a string:  \n\ndb.insert( {key:\"Anything you want\"} );     //    the path and filename to where you want it. Eg.: \"/tmp/my_data.db\"\n\nvar db2 = queryable.open( \"another.db\" );   // ** Multiple databases can be opened at once; each is fully independent.\ndb2.insert( {subarray:[1,2,'buckle',{'my':'shoe'}]} );\n\nvar result = db.find( /regex/ );            // ** Find() command works like MongoDB\n                                            // ** Returns db_result, which has a length property and _data[] array\n                                            //    as well as chainable methods like: .sort(), .limit(), .skip(), ..\n```\nSee examples in the 'examples' folder.\n\n\n## In the Works\n\n1. Better documentation; Website.\n \n2. Feature Roadmap: which features will be implemented next, roughly in order.\n\n3. Sample projects built on queryable demonstrating features and functionality.\n\n\n## Contact \n\nMail: greg@naughton.org for questions, comments, bugs\n",
+  "readmeFilename": "README.md",
+  "_id": "queryable@0.1.2"
 }
