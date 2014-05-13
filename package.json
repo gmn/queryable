@@ -1,7 +1,7 @@
 {
   "name": "queryable",
   "version": "0.1.2",
-  "description": "A tiny, self-contained, NoSQL-like, database parser that stores to human-readable JSON string. Works in both Node and Web browser automagically. Fascillitates structured querying of an array of objects. Able to read/write from text file or gzip (anything that ends in .gz is interpreted as gzip).",
+  "description": "A tiny, self-contained, NoSQL-like, database parser that stores to human-readable JSON string. Works in both Node and Web browser automagically. Fascillitates structured querying of an array of objects. Able to read/write from text file or gzip.",
   "main": "queryable.js",
   "directories": {
     "example": "examples"
@@ -22,7 +22,8 @@
     "couchdb",
     "json",
     "node",
-    "javascript"
+    "database",
+    "db"
   ],
   "author": { 
     "name": "Greg Naughton",
