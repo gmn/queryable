@@ -1,6 +1,6 @@
 {
   "name": "queryable",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A tiny, self-contained, NoSQL-like, database parser that stores to human-readable JSON string. Works in both Node and Web browser automagically. Fascillitates structured querying of an array of objects. Able to read/write from text file or gzip.",
   "main": "queryable.js",
   "directories": {
