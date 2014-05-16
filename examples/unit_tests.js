@@ -166,7 +166,7 @@ for ( var lim = 0; lim <= ph+1; lim++ ) {
 U.p( "\nSKIP: ");
 db.remove(); 
 var A = [];
-for ( var A =[], i = 0; i < 100; i++ ) {
+for ( A = [], i = 0; i < 100; i++ ) {
     A.push({'i':i});
 }
 db.insert(A);
@@ -176,4 +176,20 @@ U.test("A=[];db.find(/.*/).skip(40).limit(20)._data.forEach(function(o){A.push(o
     DISTINCT
 */
 U.p( "\nDISTINCT: " );
-
+db.remove();
+U.test( "db.find()" , '{"length":0,"_data":[]}' );
+db = queryable.open();
+db.insert( {tableName:'whatever'} );
+A = [];
+for ( A = [], i = 0; i < 4; i++ ) {
+    A.push( {'a': i%2} );
+}
+db.insert(A);
+U.test("db.find();",'{"length":5,"_data":[{"_id":1,"tableName":"whatever"},{"_id":2,"a":0},{"_id":3,"a":1},{"_id":4,"a":0},{"_id":5,"a":1}]}');
+U.test("db.distinct('a');",'{"length":3,"_data":[{"_id":1,"tableName":"whatever"},{"_id":2,"a":0},{"_id":3,"a":1}]}');
+db.insert([{'a':2},{'a':3}]);
+U.test("db.distinct('a',{'a':{$lt:1}});",'{"length":1,"_data":[{"_id":2,"a":0}]}');
+U.test("db.distinct('a',{$or:[{'tableName':{$exists:true}},{'a':{$lt:1}}]});",'{"length":2,"_data":[{"_id":1,"tableName":"whatever"},{"_id":2,"a":0}]}');
+U.test("db.distinct('a',{$or:[{'tableName':{$exists:true}},{'a':{$gte:2}}]});",'{"length":3,"_data":[{"_id":1,"tableName":"whatever"},{"_id":6,"a":2},{"_id":7,"a":3}]}');
+db.insert([{'a':2},{'a':3}]);
+U.test("db.distinct('a',{$or:[{'tableName':{$exists:true}},{'a':{$gte:2}}]});",'{"length":3,"_data":[{"_id":1,"tableName":"whatever"},{"_id":6,"a":2},{"_id":7,"a":3}]}');

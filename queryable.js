@@ -282,10 +282,6 @@
             return this;
         },
 
-        distinct: function( O ) {
-            return this;
-        },
-
         count: function() {
             return this._data.length;
         },
@@ -607,6 +603,41 @@
             res = null;
             return dbres;
         }, // this.find
+
+        //eliminates duplicate rows from the result
+        //- distinct( 'key' )
+        //- distinct( 'key', { price: { $gt: 10 } } )
+        distinct: function( str, clause ) {
+            if ( arguments.length === 1 ) {
+              var res = this.do_query();
+            } else if ( arguments.length > 1 ) {
+              var res = this.do_query(clause);
+            } else {
+              var res = this.do_query();
+            }
+
+            var set = [];
+            var maybe = [];
+            for ( var i = 0; i < res.length; i++ ) {
+                // every row that has key gets put in a contingent array to be thinned
+                if ( res[i][str] !== undefined ) {
+                    maybe.push(res[i]);
+                // every row that doesn't have key goes to set[]
+                } else {
+                    set.push(res[i]);
+                }
+            }
+
+            var vals = [];
+            for ( var i = 0; i < maybe.length; i++ ) {
+                if ( !( vals.some(function(x){return x[str] === maybe[i][str];}) ) )
+                    vals.push( maybe[i] );
+            }
+
+            var dbres = new db_result( set.concat(vals) );
+            res = null;
+            return dbres;
+        },
 
         // returns number rows altered
         remove: function( constraints ) 
