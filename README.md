@@ -69,7 +69,7 @@ See the 'examples' folder for more examples of usage.
 | $in | not implemented | selects the documents where a field equals any value in an array |
 | $lt | implemented | |
 | $lte | implemented | |
-| $ne | implemented | Matches all values that are not equal to the value specified in the query `db.find( {a:{$ne:2},b{$ne:3}} );//a!=2 && b!=3` | 
+| $ne | implemented | Matches all values that are not equal to the value specified in the query `db.find( {a:{$ne:2},b{$ne:3}} ); // select * from table where (a != 2) && (b != 3)` | 
 | $nin | not implemented | |
 | | | |
 | $or | implemented | `db.find( {$or:[{n:1},{y:{$gte:3}}]} ) //return all results where (n == 1) or (y >= 3)` |
