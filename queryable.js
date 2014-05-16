@@ -5,9 +5,11 @@
                     It supports a small, useful subset of MongoDB-like commands.
 
                     The DB is a array of objects, which are stored as a 
-                    plaintext JSON string. 
-
-                    It works in both node and the browser.
+                    plaintext JSON string. It works in both node and the browser. 
+                    Its main difference from Mongo is that there are no collections.
+                    There is a queryable object, which is used for creating db_objects.
+                    You can have as many db_objects as you would like, but you have to
+                    keep control of them yourself.
 
                     See 
                         https://github.com/gmn/queryable 
@@ -741,6 +743,7 @@
                 case '$lt': 
                 case '$lte': 
                 case '$exists':
+                case '$ne':
                     return "CLAUSE_CONDITIONAL";
                 default:
                     return "CLAUSE_SUBDOCUMENT";
@@ -822,6 +825,21 @@
                     continue next_row;
                 }
 
+
+                // add rows that don't contain test.key
+                if ( cond === '$ne' ) {
+                    // see if row contains test.key at all, if not add it
+                    if ( ! row[test.key] ) {
+                        res.push(row);
+                        continue next_row;
+                    // else do -ne test against row's matching key
+                    } else if ( row[test.key] !== test.value['$ne'] ) {
+                        res.push(row);
+                        continue next_row;
+                    }
+                }
+
+
                 // for every unique key in row
                 for ( var key in row )
                 {
@@ -849,6 +867,12 @@
                             break;
                         case '$gte':
                             if ( row[key] >= test.value[cond] ) {
+                                res.push(row);
+                                continue next_row;
+                            }
+                            break;
+                        case '$ne':
+                            if ( row[key] !== test.value[cond] ) {
                                 res.push(row);
                                 continue next_row;
                             }
@@ -957,7 +981,7 @@
             // 
         next_clause:
             for ( var clause in clauses ) 
-            { 
+            {
                 if ( ! clauses.hasOwnProperty(clause) )
                     continue next_clause;
 

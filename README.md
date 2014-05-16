@@ -1,6 +1,6 @@
 # Queryable JS
 
-Queryable - A tiny, self-contained, single file database, written in pure Javascript, which aims to support a functional subset of MongoDB-like commands. It works seamlessly in both the client (browser) and the server (node.js).  Just include it in your project and go.  The database format is stored as human-readable JSON, one file per each database.
+Queryable - A tiny, self-contained, single file database, written in pure Javascript, which aims to support a functional subset of MongoDB-like commands. It works seamlessly in both the client (browser) and the server (node.js).  Just include it in your project and go.  The database format is stored as human-readable JSON. One main difference with mongo is there are no collections. One db_object is returned per each call to queryable.open();
 
 ## Examples
 
@@ -69,10 +69,10 @@ See the 'examples' folder for more examples of usage.
 | $in | not implemented | selects the documents where a field equals any value in an array |
 | $lt | implemented | |
 | $lte | implemented | |
-| $ne | not implemented | Matches all values that are not equal to the value specified in the query | 
+| $ne | implemented | Matches all values that are not equal to the value specified in the query `db.find( {a:{$ne:2},b{$ne:3}} );//a!=2 && b!=3` | 
 | $nin | not implemented | |
 | | | |
-| $or | implemented | `db.find( {$or:{n:1,y:2}} ) //return all results where (n == 1) or (y == 2)` |
+| $or | implemented | `db.find( {$or:[{n:1},{y:{$gte:3}}]} ) //return all results where (n == 1) or (y >= 3)` |
 | $and | not implemented | |
 | $not | not implemented | |
 | $nor | not implemented | |
@@ -109,7 +109,6 @@ See the 'examples' folder for more examples of usage.
   * $unset (remove key from rows)
   * $rename (rename key in rows)
   * $not
-  * $ne
   * update().limit()
   * remove().limit()
 

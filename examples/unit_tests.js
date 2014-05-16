@@ -102,6 +102,7 @@ U.test( "db.find({b:{'$gte':4}}).sort({'_id':-1})", '{"length":2,"_data":[{"_id"
 U.test( "db.insert({name:'Paul'})", 8 );
 U.test( "db.insert({name:'Carol'})", 9 );
 U.test( "db.insert({name:'Zach'})", 10 );
+
 U.p( "\nALPHABETICAL SORT:" );
 U.test( "db.find({name:/(.*)/}).sort({name:1})", '{"length":3,"_data":[{"_id":9,"name":"Carol"},{"_id":8,"name":"Paul"},{"_id":10,"name":"Zach"}]}' );
 U.p( "$exists:true:" );
@@ -116,6 +117,18 @@ U.test( "db.find({$or:[{d:{$exists:true}},{c:{$exists:true}}]}).sort({_id:-1})",
 
 U.p( "\nAND CONDITIONAL:" );
 U.test( "db.find({b:{$gt:3},c:{$lte:5},d:{$lt:6},b:{$gte:5}})", '{"length":1,"_data":[{"_id":5,"b":5,"c":5,"d":5}]}' );
+
+U.p("\n\n==========================");
+U.p( JSON.stringify(db.find()) );
+U.p("==========================\n\n");
+
+
+U.p( "\nNOT-EQUAL::" );
+U.test( "db.find({b:{$ne:4}})", '{"length":9,"_data":[{"_id":1,"a":1},{"_id":2,"a":2,"b":2},{"_id":3,"a":3,"b":3,"c":3},{"_id":5,"b":5,"c":5,"d":5},{"_id":6,"c":6,"d":6},{"_id":7,"c":7},{"_id":8,"name":"Paul"},{"_id":9,"name":"Carol"},{"_id":10,"name":"Zach"}]}' );
+U.test( "db.find({b:{$ne:5}})", '{"length":9,"_data":[{"_id":1,"a":1},{"_id":2,"a":2,"b":2},{"_id":3,"a":3,"b":3,"c":3},{"_id":4,"a":4,"b":4,"c":4,"d":4},{"_id":6,"c":6,"d":6},{"_id":7,"c":7},{"_id":8,"name":"Paul"},{"_id":9,"name":"Carol"},{"_id":10,"name":"Zach"}]}' );
+U.test( "db.find({a:{$ne:3},b:{$ne:2},c:{$ne:6}})", '{"length":7,"_data":[{"_id":1,"a":1},{"_id":4,"a":4,"b":4,"c":4,"d":4},{"_id":5,"b":5,"c":5,"d":5},{"_id":7,"c":7},{"_id":8,"name":"Paul"},{"_id":9,"name":"Carol"},{"_id":10,"name":"Zach"}]}' );
+
+
 
 U.p( "\nOR CONDITIONAL:" );
 U.test( "db.find( {a:{$exists:true},b:{$lt:3},a:{$gte:1} } )", '{"length":1,"_data":[{"_id":2,"a":2,"b":2}]}' );

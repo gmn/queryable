@@ -39,12 +39,7 @@ function system( callback, commandline )
       return callback(res.join(' ')); 
   });
 }
-var p = function(s) { process.stdout.write(s); };
-//system( p, 'ls -ltr' );
-
-//var cmd = JSON.parse('["' + packageREADME + '"]');
-//process.stdout.write( cmd );
-
+var p = function(s) { process.stdout.write(s); fs.unlinkSync( "./package.json.README" ); };
 fs.writeFileSync( "package.json.README", packageREADME, {encoding:'utf8'} );
 var cmd = "diff README.md package.json.README";
 system( p, cmd );
@@ -52,3 +47,4 @@ system( p, cmd );
 // write package.json with README.md for o.readme
 o.readme = README;
 fs.writeFileSync( "package.json.newer", JSON.stringify(o,null,'  '), {encoding:'utf8'} );
+process.stdout.write( "generating: \"package.json.newer\"\n" );
