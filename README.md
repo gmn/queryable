@@ -45,7 +45,7 @@ See the 'examples' folder for more examples of usage.
 | | insert(vals_obj) | implemented | inserts vals_obj onto end of table; if vals_obj is an array, will treat contents as array of objects and insert each, one at a time |
 | | update(match, newval) | implemented | finds rows that match `match` and set to `newval` |
 | | find(match, callback) | implemented | returns db_result unless callback is present, then db_result passed to it |
-| | distinct(string,clause) | implemented | finds all rows, eliminates duplicate values of certain key. `db.distinct('name') || db.distinct('name',{age:{$lt:35}})` |
+| | distinct(string,clause) | implemented | finds all rows, eliminates duplicate values of certain key. `db.distinct('name')` or `db.distinct('name',{age:{$lt:35}})` |
 | | remove() | implemented | `db.remove( {name:/[A-Z](.*)/} )"` |
 | | get_json() | implemented | returns json string of entire db |
 | | print(fmt) | implemented | spits out tabular json to stdout |
@@ -72,7 +72,7 @@ See the 'examples' folder for more examples of usage.
 | $ne | not implemented | Matches all values that are not equal to the value specified in the query | 
 | $nin | not implemented | |
 | | | |
-| $or | implemented | `db.find( {$or:{n:1,y:2}} ) //return all results where (n == 1 || y == 2)` |
+| $or | implemented | `db.find( {$or:{n:1,y:2}} ) //return all results where (n == 1) or (y == 2)` |
 | $and | not implemented | |
 | $not | not implemented | |
 | $nor | not implemented | |
