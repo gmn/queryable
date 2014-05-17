@@ -1,7 +1,7 @@
-# Queryable JS
+Queryable JS
+-----------
 
-Queryable - A tiny, self-contained, single file database, written in pure Javascript, which aims to support a functional subset of MongoDB-like commands. It works seamlessly in both the client (browser) and the server (node.js).  Just include it in your project and go.  The database format is stored as human-readable JSON. One main difference with mongo is there are no collections. One db_object is returned per each call to queryable.open();
-
+Queryable - A tiny, single file database written in Javascript, which emulates a functional subset of mongodb commands. It works in both browser and server (node.js). The database itself is stored as a json string. Unlike mongo there are no collections; A separate db is simply returned by each call to open().
 ## Examples
 
 To use queryable.js in node.js, simply do:
@@ -31,72 +31,71 @@ var res = db.find({name:{'$exists':true}}).sort({name:-1})  // only rows where '
 ```
 See the 'examples' folder for more examples of usage.
 
-<span style="color:#080">implemented</span>
 # Full List of Commands
 
 ## Supported Methods
 | *object* | command | status | comment/example |
 | --- | --- | --- | --- |
 | **queryable** | | | the return of `require('queryable')` |
-| | `open();` | <span style="color:#080">implemented</span> | returns db_object |
-| | `useGzip(boolean);` | <span style="color:#080">implemented</span> | force use of gzip. Useful for gzipped files lacking '.gz' extension; defaults to false |
+| | `open();` | implemented | returns db_object |
+| | `useGzip(boolean);` | implemented | force use of gzip. Useful for gzipped files lacking '.gz' extension; defaults to false |
 | **db_object** | | | the return of `queryable.open()` |
-| | save() | <span style="color:#080">implemented</span> | writes to current system (either file-system or browser) |
-| | insert(vals_obj) | <span style="color:#080">implemented</span> | inserts vals_obj onto end of table; if vals_obj is an array, will treat contents as array of objects and insert each, one at a time |
-| | update(match, newval) | <span style="color:#080">implemented</span> | finds rows that match `match` and set to `newval` |
-| | find(match, callback) | <span style="color:#080">implemented</span> | returns db_result unless callback is present, then db_result passed to it |
-| | distinct(string,clause) | <span style="color:#080">implemented</span> | finds all rows, eliminates duplicate values of certain key. `db.distinct('name')` or `db.distinct('name',{age:{$lt:35}})` |
-| | remove() | <span style="color:#080">implemented</span> | `db.remove( {name:/[A-Z](.*)/} )"` |
-| | get_json() | <span style="color:#080">implemented</span> | returns json string of entire db |
-| | print(fmt) | <span style="color:#080">implemented</span> | spits out tabular json to stdout |
-| | now() | <span style="color:#080">implemented</span> | returns Date().toISOString of the present moment; useful for date fields |
-| | toDate(arg) | <span style="color:#080">implemented</span> | returns new Date(arg) |
-| | count() | <span style="color:#080">implemented</span> | returns table length |
+| | save() | implemented | writes to current system (either file-system or browser) |
+| | insert(vals_obj) | implemented | inserts vals_obj onto end of table; if vals_obj is an array, will treat contents as array of objects and insert each, one at a time |
+| | update(match, newval) | implemented | finds rows that match `match` and set to `newval` |
+| | find(match, callback) | implemented | returns db_result unless callback is present, then db_result passed to it |
+| | distinct(string,clause) | implemented | finds all rows, eliminates duplicate values of certain key. `db.distinct('name')` or `db.distinct('name',{age:{$lt:35}})` |
+| | remove() | implemented | `db.remove( {name:/[A-Z](.*)/} )"` |
+| | get_json() | implemented | returns json string of entire db |
+| | print(fmt) | implemented | spits out tabular json to stdout |
+| | now() | implemented | returns Date().toISOString of the present moment; useful for date fields |
+| | toDate(arg) | implemented | returns new Date(arg) |
+| | count() | implemented | returns table length |
 | **db_result** | | | |
-| | sort() | <span style="color:#080">implemented</span> | &nbsp; |
-| | limit(integer) | <span style="color:#080">implemented</span> | &nbsp; |
-| | skip(integer) | <span style="color:#080">implemented</span> | intege |
-| | count() | <span style="color:#080">implemented</span> | returns length of result set |
-| | getArray() | <span style="color:#080">implemented</span> | &nbsp; |
-| | get_json() | <span style="color:#080">implemented</span> | &nbsp; |
-| | print(fmt) | <span style="color:#080">implemented</span> | debug print to stdout |
+| | sort() | implemented | &nbsp; |
+| | limit(integer) | implemented | &nbsp; |
+| | skip(integer) | implemented | intege |
+| | count() | implemented | returns length of result set |
+| | getArray() | implemented | &nbsp; |
+| | get_json() | implemented | &nbsp; |
+| | print(fmt) | implemented | debug print to stdout |
 
 ## Query Operators
 | Name | Status | comment/example |
 | --- | --- | --- |
-| $gt | <span style="color:#080">implemented</span> | `db.find( {a:{$gt:5} );` |
-| $gte | <span style="color:#080">implemented</span> | `db.find( {a:{$gte:100} );` |
-| $in | <span style="color:#F70">not implemented</span> | selects the documents where a field equals any value in an array |
-| $lt | <span style="color:#080">implemented</span> | |
-| $lte | <span style="color:#080">implemented</span> | |
-| $ne | <span style="color:#080">implemented</span> | Matches all values that are not equal to the value specified in the query `db.find( {a:{$ne:2},b{$ne:3}} ); // select * from table where (a != 2) && (b != 3)` | 
-| $nin | <span style="color:#F70">not implemented</span> | |
+| $gt | implemented | `db.find( {a:{$gt:5} );` |
+| $gte | implemented | `db.find( {a:{$gte:100} );` |
+| $in | *not impl* | selects the documents where a field equals any value in an array |
+| $lt | implemented | |
+| $lte | implemented | |
+| $ne | implemented | Matches all values that are not equal to the value specified in the query `db.find( {a:{$ne:2},b{$ne:3}} ); // select * from table where (a != 2) && (b != 3)` | 
+| $nin | *not impl* | |
 | | | |
-| $or | <span style="color:#080">implemented</span> | `db.find( {$or:[{n:1},{y:{$gte:3}}]} ) //return all results where (n == 1) or (y >= 3)` |
-| $and | <span style="color:#F70">not implemented</span> | |
-| $not | <span style="color:#F70">not implemented</span> | |
-| $nor | <span style="color:#F70">not implemented</span> | |
+| $or | implemented | `db.find( {$or:[{n:1},{y:{$gte:3}}]} ) //return all results where (n == 1) or (y >= 3)` |
+| $and | *not impl* | |
+| $not | *not impl* | |
+| $nor | *not impl* | |
 | | | |
-| $exists | <span style="color:#080">implemented</span> | `db.find( {name: {$exists:true} } ) // return all results where the name field exists` |
-| $type | <span style="color:#F70">not implemented</span> | |
+| $exists | implemented | `db.find( {name: {$exists:true} } ) // return all results where the name field exists` |
+| $type | *not impl* | |
 | | | |
-| $mod | <span style="color:#800">no plans</span> | |
-| $regex | <span style="color:#800">no plans</span> | |
-| $text | <span style="color:#800">no plans</span> | |
-| $where | <span style="color:#800">no plans</span> | &nbsp; |
+| $mod | no plans | |
+| $regex | no plans | |
+| $text | no plans | |
+| $where | no plans | &nbsp; |
 
 ## Update Operators
 | Name | Status | comment/example |
 | --- | --- | --- |
-| $inc | <span style="color:#F70">not implemented</span> | Increments the value of the field by the specified amount. |
-| $mul | <span style="color:#F70">not implemented</span> | Multiplies the value of the field by the specified amount. |
-| $rename | <span style="color:#F70">not implemented</span> | Renames a field. |
-| $setOnInsert | <span style="color:#F70">not implemented</span> | Sets the value of a field upon document creation during an upsert. Has no effect on update operations that modify existing documents. |
-| $set | <span style="color:#080">implemented</span> | Sets the value of a field in an existing document. |
-| $unset | <span style="color:#F70">not implemented</span> | Removes the specified field from an existing document. |
-| $min | <span style="color:#F70">not implemented</span> | Only updates if the existing field value is less than the specified value. |
-| $max | <span style="color:#F70">not implemented</span> | Only updates if the existing field value is greater than the specified value. |
-| $currentDate | <span style="color:#080">implemented</span> | Use **db.now()** instead |
+| $inc | *not impl* | Increments the value of the field by the specified amount. |
+| $mul | *not impl* | Multiplies the value of the field by the specified amount. |
+| $rename | *not impl* | Renames a field. |
+| $setOnInsert | *not impl* | Sets the value of a field upon document creation during an upsert. Has no effect on update operations that modify existing documents. |
+| $set | implemented | Sets the value of a field in an existing document. |
+| $unset | *not impl* | Removes the specified field from an existing document. |
+| $min | *not impl* | Only updates if the existing field value is less than the specified value. |
+| $max | *not impl* | Only updates if the existing field value is greater than the specified value. |
+| $currentDate | implemented | Use **db.now()** instead for now |
 
 
 ## In the Works
@@ -105,12 +104,18 @@ See the 'examples' folder for more examples of usage.
  
 2. Feature Roadmap: which features will be implemented next, roughly in order.
   * callbacks
-  * $in and $nin
-  * $unset (remove key from rows)
-  * $rename (rename key in rows)
-  * $not
+  * $in, $nin
+  * $and, $not, $nor
+  * $inc, $mul 
+  * $unset 
+  * $rename 
   * update().limit()
   * remove().limit()
+  * $min, $max
+  * $currentDate    (db.now() already accomplishes this, though could alias it to $currentDate)
+  * queryable.min.js
+  * cleanup
+  * better documentation for open() 
 
 3. Sample projects built on queryable demonstrating features and functionality.
   * [Arcane Vocabulary Tutor](http://lit-tundra-5131.herokuapp.com/)

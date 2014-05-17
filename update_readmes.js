@@ -1,3 +1,4 @@
+// this script updates the readme attribute of the package.json, from README.md
 
 var fs = require('fs');
 var f = fs.readFileSync('package.json',{encoding:'utf8'});
@@ -39,12 +40,28 @@ function system( callback, commandline )
       return callback(res.join(' ')); 
   });
 }
-var p = function(s) { process.stdout.write(s); fs.unlinkSync( "./package.json.README" ); };
-fs.writeFileSync( "package.json.README", packageREADME, {encoding:'utf8'} );
-var cmd = "diff README.md package.json.README";
-system( p, cmd );
+// write readme and diff against it, then remove it
+var pkg_readme = './1234wxyz_tmp.txt';
 
-// write package.json with README.md for o.readme
-o.readme = README;
-fs.writeFileSync( "package.json.newer", JSON.stringify(o,null,'  '), {encoding:'utf8'} );
-process.stdout.write( "generating: \"package.json.newer\"\n" );
+var finish_callback = function(s) { 
+  process.stdout.write(s); 
+  fs.unlinkSync( pkg_readme ); 
+
+  if ( s.trim().length > 0 ) {
+    // write newer package.json using README.md 
+    process.stdout.write( "writing: \"backup.package.json\"\n" );
+    fs.writeFileSync('backup.package.json',f,{encoding:'utf8'});
+    o.readme = README;
+    process.stdout.write( "overwriting: \"package.json\"\n" );
+    fs.writeFileSync( "package.json", JSON.stringify(o,null,'  '), {encoding:'utf8'} );
+  } else {
+    process.stdout.write( "no change\n" );
+  }
+};
+
+// write file to diff
+fs.writeFileSync( pkg_readme, packageREADME, {encoding:'utf8'} );
+
+// do diff and then finish
+system( finish_callback, "diff README.md " + pkg_readme );
+
