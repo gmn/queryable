@@ -365,6 +365,8 @@
             // if db_path exists, load it
             if ( fs.existsSync( this.db_path ) ) 
             {
+                var was_gzip = false;
+
                 // try to open with gzip; note: presence of gzbz is no longer guaranteed
                 if ( this.use_gzip ) 
                 {
@@ -382,15 +384,23 @@
                         return;
                     } catch(e) {
                         this.use_gzip = false;
+                        console.log( "warning: tried to open as gzip without gzbz module present. Trying normal." );
+                        was_gzip = true;
                     }
                 }
 
-                // normal, no gzip
-                var data = fs.readFileSync(this.db_path,{encoding:"utf8",flag:'r'});
+                try {
+                    // normal, no gzip
+                    var data = fs.readFileSync(this.db_path,{encoding:"utf8",flag:'r'});
 
-                // convert into master format
-                this.master = JSON.parse( data );
-                finish_db_setup.call(this);
+                    // convert into master format
+                    this.master = JSON.parse( data );
+                    finish_db_setup.call(this);
+                } catch(e) {
+                    var msg = 'error: "' + this.db_path + '" failed to open.';
+                    console.log( msg );
+                    process.exit(-1);
+                }
             }
         }
 
