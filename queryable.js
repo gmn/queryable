@@ -365,28 +365,32 @@
             // if db_path exists, load it
             if ( fs.existsSync( this.db_path ) ) 
             {
-                // open the gzip way
+                // try to open with gzip; note: presence of gzbz is no longer guaranteed
                 if ( this.use_gzip ) 
                 {
-                    var gzbz = require('gzbz');
-                    var gunzip = new gzbz.Gunzip;        
-                    gunzip.init( {encoding:'utf8'} );
-                    var gzdata = fs.readFileSync(this.db_path,{encoding:"binary",flag:'r'});
-                    var inflated = gunzip.inflate( gzdata, "binary" );
-                    gunzip.end();
+                    try {
+                        var gzbz = require('gzbz');
+                        var gunzip = new gzbz.Gunzip;        
+                        gunzip.init( {encoding:'utf8'} );
+                        var gzdata = fs.readFileSync(this.db_path,{encoding:"binary",flag:'r'});
+                        var inflated = gunzip.inflate( gzdata, "binary" );
+                        gunzip.end();
 
-                    // convert into master format
-                    this.master = JSON.parse( inflated );
-                    finish_db_setup.call(this);
+                        // convert into master format
+                        this.master = JSON.parse( inflated );
+                        finish_db_setup.call(this);
+                        return;
+                    } catch(e) {
+                        this.use_gzip = false;
+                    }
+                }
 
                 // normal, no gzip
-                } else {
-                    var data = fs.readFileSync(this.db_path,{encoding:"utf8",flag:'r'});
+                var data = fs.readFileSync(this.db_path,{encoding:"utf8",flag:'r'});
 
-                    // convert into master format
-                    this.master = JSON.parse( data );
-                    finish_db_setup.call(this);
-                }
+                // convert into master format
+                this.master = JSON.parse( data );
+                finish_db_setup.call(this);
             }
         }
 
@@ -466,33 +470,39 @@
                 var gzip_lvl = 1; // 5 is middle. bias heavily towards speed since using gzip makes this I/O bound 
 
                 if ( this.use_gzip ) {
-                    if ( use_async ) {
-                        var ostream = fs.createWriteStream( this.db_path );                    
-                        var zlib = require('zlib');
-                        var Stream = require('stream');
-                        var in_stream = new Stream();
-                        in_stream.pipe(zlib.createGzip()).pipe(ostream);
-                        in_stream.emit('data', JSON.stringify(this.master) );
-                        in_stream.emit('end');
-                    } else {
-                        var gzbz = require('gzbz');
-                        var gzip = new gzbz.Gzip();
-                        gzip.init( {encoding:"binary", level: gzip_lvl /* 1<=level<=9 */} );
-                        var gz1 = gzip.deflate( JSON.stringify(this.master) );
-                        var gz2 = gzip.end(); // important to capture end!
-                        var gzdata = gz1 + gz2;
-                        fs.writeFileSync( this.db_path, gzdata, {encoding:"binary",mode:mode,flag:'w'} );
-                    }
-                } else {
                     try {
-                        fs.writeFileSync( this.db_path, JSON.stringify(this.master), {encoding:"utf8",mode:mode,flag:'w'} );
-                    } catch(e) {
-                        console.log( "queryable: error: failed writing: \""+this.db_path+'"' );
-                    }
+                        if ( use_async ) {
+                            var ostream = fs.createWriteStream( this.db_path );                    
+                            var zlib = require('zlib');
+                            var Stream = require('stream');
+                            var in_stream = new Stream();
+                            in_stream.pipe(zlib.createGzip()).pipe(ostream);
+                            in_stream.emit('data', JSON.stringify(this.master) );
+                            in_stream.emit('end');
+                        } else {
+                            var gzbz = require('gzbz');
+                            var gzip = new gzbz.Gzip();
+                            gzip.init( {encoding:"binary", level: gzip_lvl /* 1<=level<=9 */} );
+                            var gz1 = gzip.deflate( JSON.stringify(this.master) );
+                            var gz2 = gzip.end(); // important to capture end!
+                            var gzdata = gz1 + gz2;
+                            fs.writeFileSync( this.db_path, gzdata, {encoding:"binary",mode:mode,flag:'w'} );
+                        }
+                        return true;
+                    } catch(e){}
+                } 
+
+                try {
+                    fs.writeFileSync( this.db_path, JSON.stringify(this.master), {encoding:"utf8",mode:mode,flag:'w'} );
+                } catch(e) {
+                    console.log( "queryable: error: failed writing: \""+this.db_path+'"' );
+                    return false;
                 }
+
             } else if ( this.platform === "browser" ) {
                 localStorage[this.db_name] = JSON.stringify(this.master);
             }
+            return true;
         }, // this.save
 
         // returns last _id insert
@@ -1037,7 +1047,7 @@
             this.db_dir     = path.resolve(__dirname);
             this.db_path    = 0;
 
-            // defaults to off; can be set by either: method() or config{}
+            // defaults to off; can be set by either: the useGzip() method or config{}
             // also: sets to ON automatically if file opened has *.gz extension
             this.use_gzip   = false; 
 
@@ -1109,7 +1119,6 @@
             // overwrite from user-supplied config settings
             else if ( arguments.length > 0 && typeof config === "object" ) 
             {
-
                 for ( var i = 0; i < parm_list.length; i++ ) 
                 {
                     if ( config[parm_list[i]] ) {

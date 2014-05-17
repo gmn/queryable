@@ -206,3 +206,5 @@ U.test("db.distinct('a',{$or:[{'tableName':{$exists:true}},{'a':{$lt:1}}]});",'{
 U.test("db.distinct('a',{$or:[{'tableName':{$exists:true}},{'a':{$gte:2}}]});",'{"length":3,"_data":[{"_id":1,"tableName":"whatever"},{"_id":6,"a":2},{"_id":7,"a":3}]}');
 db.insert([{'a':2},{'a':3}]);
 U.test("db.distinct('a',{$or:[{'tableName':{$exists:true}},{'a':{$gte:2}}]});",'{"length":3,"_data":[{"_id":1,"tableName":"whatever"},{"_id":6,"a":2},{"_id":7,"a":3}]}');
+db = queryable.open( {data:[{n:'jared'},{n:'martha'},{n:'jim'},{n:'nolan'},{n:'jim'},{n:'jared'}]});
+U.test("db.distinct('n',{n:/^j/});", '{"length":2,"_data":[{"_id":1,"n":"jared"},{"_id":3,"n":"jim"}]}' );
