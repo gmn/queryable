@@ -45,15 +45,15 @@ There are essentially 3 forms of open(): no args, a single string, a single obje
 ### queryable.open(string)
 * First it tries string as a fullpath; if file is found: db_name,db_dir,and db_path are set.
 * If a file isn't found, it tries string as a directory, where it will create the database using the default db_name.
-* If it isn't a directory or an existing file, string is assumed to be a fullpath with no file yet saved. db_path, db_dir, and db_name are set from that.
+* If it isn't a directory or an existing file, string is assumed to be a fullpath where the file will be saved to. db_path, db_dir, and db_name are set from that.
 
 ### queryable.open(object)
-* if argument is an object, these configuration variable are looked for in it:
-  * **db_name**       If none supplied, it either takes one from db_path or defaults to *'queryable'* or *'test.db'* in the browser or in node respectively.
-  * **db_path**       The fullpath where the database lives. Irrelevant in the browser. The database file is written to db_path everytime save() is called, and read from it in open() if an existing file is discovered at the location.
-  * **db_dir**        Defaults to current working directory if db_path or db_dir are not supplied.
-  * **use_gzip**      Can manually specify file is of type gzip. This is useful for files lacking the '.gz' extension. Note: currently gzbz must be present for this to work.
-  * **data**          If this is set, the database can be populated outright by an argument to data. data can be string or json. It must be in the form of **Array of Zero or More Objects of Any Kind**.
+If argument is an object, these configuration variable are looked for in it:
+* **db_name**       If none supplied, it either takes one from db_path or defaults to *'queryable'* or *'test.db'* in the browser or in node respectively.
+* **db_path**       The fullpath where the database lives. Irrelevant in the browser. The database file is written to db_path everytime save() is called, and read from it in open() if an existing file is discovered at the location.
+* **db_dir**        Defaults to current working directory if db_path or db_dir are not supplied.
+* **use_gzip**      Can manually specify file is of type gzip. This is useful for files lacking the '.gz' extension. Note: currently gzbz must be present for this to work.
+* **data**          If this is set, the database can be populated outright by an argument to data. data can be string or json. It must be in the form of **Array of Zero or More Objects of Any Kind**.
 
 
 # Full List of Commands
@@ -150,22 +150,22 @@ There are essentially 3 forms of open(): no args, a single string, a single obje
 ## Install
 To install: 
 
-    ```
-    npm install queryable
-    ```
-To install in your project and save in its `package.json`: 
+```
+npm install queryable
+```
+To install in your project and append it to the project's `package.json`: 
 
-    ```
-    npm install queryable --save
-    ```
+```
+npm install queryable --save
+```
 
 ## Test
 
 To run unit-tests: 
 
-    ```
-    npm test
-    ```
+```
+npm test
+```
 
 ## Licence
 
