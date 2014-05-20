@@ -38,18 +38,18 @@ See the 'examples' folder for more examples of usage.
 There are essentially 3 forms of open(): no args, a single string, a single object. The most concise way to specify what you want is to use a `config` object, and specify each param individually. Failing that, merely providing a fullpath string, where you want your database to live, is sufficient in most cases.
 
 ### queryable.open()
-* `db_name` = defaults to 'test.db' in node, 'queryable' in web browser
+* `db_name` = defaults to '*test.db*' in node, '*queryable*' in web browser
 * `db_dir`  = default is current working directory: (eg. /home/kooldude)
 * `db_path` = concatenation of: (db_dir + db_name) (eg. /home/kooldude/test.db)
 
 ### queryable.open(string)
-* First it tries string as a fullpath; if file is found: db_name,db_dir,and db_path are set.
-* If a file isn't found, it tries string as a directory, where it will create the database using the default db_name.
-* If it isn't a directory or an existing file, string is assumed to be a fullpath where the file will be saved to. db_path, db_dir, and db_name are set from that.
+* First it tries string as a fullpath; if file is found: `db_name`, `db_dir`, and `db_path` are set.
+* If a file isn't found, it tries string as a directory where it will create the database using the default `db_name`.
+* If it isn't a directory or an existing file, string is assumed to be a fullpath where the file will be saved to. `db_path`, `db_dir`, and `db_name` are set from that.
 
 ### queryable.open(object)
 If argument is an object, these configuration variable are looked for in it:
-* **db_name**       If none supplied, it either takes one from db_path or defaults to *'queryable'* or *'test.db'* in the browser or in node respectively.
+* **db_name**       If none supplied, it either takes one from db_path or defaults to '*queryable*' or '*test.db*' in the browser or in node respectively.
 * **db_path**       The fullpath where the database lives. Irrelevant in the browser. The database file is written to db_path everytime save() is called, and read from it in open() if an existing file is discovered at the location.
 * **db_dir**        Defaults to current working directory if db_path or db_dir are not supplied.
 * **use_gzip**      Can manually specify file is of type gzip. This is useful for files lacking the '.gz' extension. Note: currently gzbz must be present for this to work.
@@ -153,7 +153,7 @@ To install:
 ```
 npm install queryable
 ```
-To install in your project and append it to the project's `package.json`: 
+To install in your project and append it to your project's `package.json`: 
 
 ```
 npm install queryable --save
