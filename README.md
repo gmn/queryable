@@ -2,6 +2,8 @@ Queryable JS
 -----------
 
 Queryable - A tiny, single file database written in Javascript, that emulates a functional subset of mongodb commands. It works in both browser and server (node.js). The database itself is stored as a json string. Unlike mongo there are no collections; A separate db is simply returned by each call to open(). Essentially, queryable facilitates structured querying of an array of objects.
+
+
 ## Examples
 
 ### Some examples of using queryable.js in node.js:
@@ -53,33 +55,33 @@ npm test
 ```
 
 
-# API
+## API
 
-## The queryable.open() function
+### The queryable.open() function
 There are essentially 3 forms of open(): no args, a single string, a single object. The most concise way to specify what you want is to use a `config` object, and specify each param individually. Failing that, merely providing a fullpath string, where you want your database to live, is sufficient in most cases.
 
-### queryable.open()
+#### queryable.open()
 * `db_name` = defaults to '*test.db*' in node, '*queryable*' in web browser
 * `db_dir`  = default is current working directory: (eg. /home/kooldude)
 * `db_path` = concatenation of: (db_dir + db_name) (eg. /home/kooldude/test.db)
 
-### queryable.open(string)
+#### queryable.open(string)
 * First it tries string as a fullpath; if file is found: `db_name`, `db_dir`, and `db_path` are set.
 * If a file isn't found, it tries string as a directory where it will create the database using the default `db_name`.
 * If it isn't a directory or an existing file, string is assumed to be a fullpath where the file will be saved to. `db_path`, `db_dir`, and `db_name` are set from that.
 
-### queryable.open(object)
+#### queryable.open(object)
 If argument is an object, these configuration variable are looked for in it:
 * **db_name**       If none supplied, it either takes one from db_path or defaults to '*queryable*' or '*test.db*' in the browser or in node respectively.
 * **db_path**       The fullpath where the database lives. Irrelevant in the browser. The database file is written to db_path everytime save() is called, and read from it in open() if an existing file is discovered at the location.
 * **db_dir**        Defaults to current working directory if db_path or db_dir are not supplied.
 * **use_gzip**      Can manually specify file is of type gzip. This is useful for files lacking the '.gz' extension. Note: currently gzbz must be present for this to work.
-* **data**          If this is set, the database can be populated outright by an argument to data. data can be string or json. It must be in the form of **Array of Zero or More Objects of Any Kind**.
+* **data**          If this is set, the database can be populated outright by an argument to data. data can be string or json. It must be in the form of an **Array of Zero or More Objects of Any Kind**.
 
 
-# Full List of Commands
+## Full List of Commands
 
-## Supported Methods
+### Supported Methods
 | *object* | command | status | comment/example |
 | --- | --- | --- | --- |
 | **queryable** | | | the return of `require('queryable')` |
@@ -106,7 +108,7 @@ If argument is an object, these configuration variable are looked for in it:
 | | `get_json()` | implemented | &nbsp; |
 | | `print(fmt)` | implemented | debug print to stdout |
 
-## Query Operators
+### Query Operators
 | Name | Status | comment/example |
 | --- | --- | --- |
 | $gt | implemented | `db.find( {a:{$gt:5} );` |
@@ -130,7 +132,7 @@ If argument is an object, these configuration variable are looked for in it:
 | $text | no plans | |
 | $where | no plans | &nbsp; |
 
-## Update Operators
+### Update Operators
 | Name | Status | comment/example |
 | --- | --- | --- |
 | $inc | *not impl* | Increments the value of the field by the specified amount. |
@@ -145,7 +147,6 @@ If argument is an object, these configuration variable are looked for in it:
 
 
 ## In the Works
-
 1. Better documentation (still working on it); Website (not quite yet).
  
 2. Feature Roadmap: which features will be implemented next, roughly in order.
@@ -168,8 +169,8 @@ If argument is an object, these configuration variable are looked for in it:
   * [Arcane Vocabulary Tutor](http://lit-tundra-5131.herokuapp.com/)
   * [basic browser example](https://raw.githubusercontent.com/gmn/queryable/master/examples/browser.html)
 
-## Licence
 
+## Licence
 (The MIT License)
 
 Copyright 2014 No Genius Software. All rights reserved.
@@ -180,6 +181,6 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-## Contact 
 
+## Contact 
 Mail: greg@naughton.org for questions, comments, bugs
