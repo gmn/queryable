@@ -32,6 +32,27 @@ var res = db.find({name:{'$exists':true}}).sort({name:-1})  // only rows where '
 ```
 See the 'examples' folder for more examples of usage.
 
+## Install
+To install: 
+
+```
+npm install queryable
+```
+To install in your project and append it to your project's `package.json`: 
+
+```
+npm install queryable --save
+```
+
+## Test
+
+To run unit-tests: 
+
+```
+npm test
+```
+
+
 # API
 
 ## The queryable.open() function
@@ -146,26 +167,6 @@ If argument is an object, these configuration variable are looked for in it:
 3. Sample projects built on queryable demonstrating features and functionality.
   * [Arcane Vocabulary Tutor](http://lit-tundra-5131.herokuapp.com/)
   * [basic browser example](https://raw.githubusercontent.com/gmn/queryable/master/examples/browser.html)
-
-## Install
-To install: 
-
-```
-npm install queryable
-```
-To install in your project and append it to your project's `package.json`: 
-
-```
-npm install queryable --save
-```
-
-## Test
-
-To run unit-tests: 
-
-```
-npm test
-```
 
 ## Licence
 
