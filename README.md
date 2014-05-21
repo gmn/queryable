@@ -170,7 +170,7 @@ If argument is an object, these configuration variable are looked for in it:
   * [basic browser example](https://raw.githubusercontent.com/gmn/queryable/master/examples/browser.html)
 
 
-## Licence
+## License
 (The MIT License)
 
 Copyright 2014 No Genius Software. All rights reserved.
