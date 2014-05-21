@@ -38,6 +38,13 @@
         var queryable = require('queryable');
         var str = '[{"name":"Cathy"},{"name":"Carol","sex":"f"},{"name":"John","sex":"m"}]';
         var db = queryable.open( {"db_name":"Test1","data":str} ); 
+        // get names
+        var res = db.find( {name:/^C/} );
+        res._data.forEach(function(x){
+          console.log(x.name);
+        });
+        // Cathy
+        // Carol
 */
 
 (function(queryable) 

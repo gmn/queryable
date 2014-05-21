@@ -31,6 +31,24 @@ var res = db.find({name:{'$exists':true}}).sort({name:-1})  // only rows where '
 
                                             // ** Returns db_result, which has a length property and _data[] array
                                             //    as well as chainable methods like: .sort(), .limit(), .skip(), ..
+
+//
+// a real example - populate from string
+//
+var queryable = require('queryable');
+var str = '[{"name":"Cathy"},{"name":"Carol","sex":"f"},{"name":"John","sex":"m"},{"name":"Cornelius"}]';
+var db = queryable.open( {"db_name":"MyFunkyDatabase","data":str} ); 
+// remove one for good measure
+db.remove( {name:'Cathy'} );
+// get names
+var res = db.find( {name:/^C/} );
+console.log( db.db_name + ' has these names that start with C:' );
+res._data.forEach(function(x){
+  console.log(' ' + x.name);
+});
+// MyFunkyDatabase contains these names that start with C:
+//  Carol
+//  Cornelius
 ```
 See the 'examples' folder for more examples of usage.
 
