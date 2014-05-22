@@ -1,41 +1,38 @@
 /**
 
-    queryable.js   A tiny, self-contained, single file database parser that
-                   uses clear-text, human readable JSON for storage. 
+    queryable.js    A tiny, self-contained, single file database parser that
+                    uses clear-text, human readable JSON for storage. 
                     It supports a small, useful subset of MongoDB-like commands.
 
                     The DB is a array of objects, which are stored as a 
                     plaintext JSON string. It works in both node and the browser. 
                     Its main difference from Mongo is that there are no collections.
                     There is a queryable object, which is used for creating db_objects.
-                    You can have as many db_objects as you would like, but you have to
-                    keep control of them yourself.
+                    You can have as many db_objects as you like, but have to keep 
+                    track of them yourself.
 
-                    See 
+                    (C) 2014 Greg Naughton
+
+                    For more details, documentation, new releases and code go to:
+
                         https://github.com/gmn/queryable 
-
-                    for more details, documentation, new releases and code.
 
     Examples:
 
         // ex.1 - Simplest
-
         var queryable = require('queryable');
-
         // opens db if one is found matching 'database_name'; 
         //  otherwise creates new db with that name
         var db = queryable.open('database_name'); 
-
         db.insert({record:"new record"});
-
         // returns db_result object, sorts it, limited to the top-5 results
         var res = db.find({record:"matching term"}).sort({record:1}).limit(5);
-
         // nothing is written to file (or browser) until save() is called
         db.save(); 
 
         // ex.2 - populate from string
         var queryable = require('queryable');
+        // can be either string or object
         var str = '[{"name":"Cathy"},{"name":"Carol","sex":"f"},{"name":"John","sex":"m"}]';
         var db = queryable.open( {"db_name":"Test1","data":str} ); 
         // get names

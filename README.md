@@ -36,12 +36,13 @@ var res = db.find({name:{'$exists':true}}).sort({name:-1})  // only rows where '
 // a real example - populate from string
 //
 var queryable = require('queryable');
-var str = '[{"name":"Cathy"},{"name":"Carol","sex":"f"},{"name":"John","sex":"m"},{"name":"Cornelius"}]';
-var db = queryable.open( {"db_name":"MyFunkyDatabase","data":str} ); 
+// this can be a string or an object 
+var db_string = '[{"name":"Cathy"},{"name":"Carol","sex":"f"},{"name":"John","sex":"m"},{"name":"Cornelius"}]';
+var db = queryable.open({db_name:"MyFunkyDatabase",data:db_string}); 
 // remove one for good measure
-db.remove( {name:'Cathy'} );
+db.remove({name:'Cathy'});
 // get names
-var res = db.find( {name:/^C/} );
+var res = db.find({name:/^C/});
 console.log( db.db_name + ' has these names that start with C:' );
 res._data.forEach(function(x){
   console.log(' ' + x.name);
@@ -184,8 +185,9 @@ If argument is an object, these configuration variable are looked for in it:
   * [] cleanup
 
 3. Sample projects built on queryable demonstrating features and functionality.
+  * [Simple Browser Example](http://fatolsun.com/queryable-demo/)
+    * code for this is [here](https://raw.githubusercontent.com/gmn/queryable/master/examples/browser.html)
   * [Arcane Vocabulary Tutor](http://lit-tundra-5131.herokuapp.com/)
-  * [basic browser example](https://raw.githubusercontent.com/gmn/queryable/master/examples/browser.html)
 
 
 ## License
