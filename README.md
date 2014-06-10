@@ -170,8 +170,9 @@ If argument is an object, these configuration variable are looked for in it:
  
 2. Feature Roadmap: which features will be implemented next, roughly in order.
   * [X] better documentation for open() 
-  * [] better documentation for update() 
   * [] callbacks
+  * [] .findOne() 
+  * [] better documentation for update() 
   * [] $in, $nin
   * [] $and, $not, $nor
   * [] $inc, $mul 
@@ -185,8 +186,7 @@ If argument is an object, these configuration variable are looked for in it:
   * [] cleanup
 
 3. Sample projects built on queryable demonstrating features and functionality.
-  * [Simple Browser Example](http://fatolsun.com/queryable-demo/)
-    * code for this is [here](https://raw.githubusercontent.com/gmn/queryable/master/examples/browser.html)
+  * [Simple Browser Example](http://fatolsun.com/queryable-demo/) (sourceode [here](https://raw.githubusercontent.com/gmn/queryable/master/examples/browser.html))
   * [Arcane Vocabulary Tutor](http://lit-tundra-5131.herokuapp.com/)
 
 

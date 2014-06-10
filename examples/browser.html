@@ -7,10 +7,12 @@
 
 <h2><a href="https://github.com/gmn/queryable">Queryable</a> Browser Demo</h2>
 <h3>Enter some words, then close your browser and re-open it again. Navigate to this page.</h3>
+<div style="border:1px solid #999;padding:5px;width:37%;min-width:300px">
 <button id="clear_btn" >Clear Cache</button>
 <div id="inforows"></div>
 <input id="db_ins_txt" type="text"></input>
 <button id="db_ins_btn" >Press Me</button>
+</div>
 
 
 <script>
@@ -65,9 +67,9 @@ draw_rows();
 <ul>
   <li>queryable.js is fetched from the server in &nbsp; <strong>&lt;script src="/queryable.js"&gt;&lt;/script&gt;</strong> like normal</li>
   <li>The database is stored <i>in</i> the browser, inside a variable provided by most browsers: <strong>localStorage</strong></li>
-  <li>When &nbsp;<strong>queryable.open("DatabaseName");</strong>&nbsp; is called, if a matching <strong>db_name</strong> key is found in<br><strong>localStorage</strong>, queryable loads from it.</li>
+  <li>When &nbsp;<strong>queryable.open(db_name);</strong>&nbsp; is called, if a matching <strong>db_name</strong> key is found in<br><strong>localStorage</strong>, queryable loads from it.</li>
   <li>When &nbsp;<strong>db.save()</strong>&nbsp; is called, it updates the key in <strong>localStorage</strong></li>
-  <li>Multiple DBs can be on the same page but must have different &nbsp;<strong>db_name</strong></li>
+  <li>Multiple DBs can be on the same page with different &nbsp;<strong>db_name</strong></li>
 </ul>
 <br>
 
