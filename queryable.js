@@ -743,6 +743,21 @@
             return this.master.length;
         },
 
+        renormalize: function() {
+            // sort each row elements
+            for ( var i = 0, l = this.master.length; i < l; i++ ) {
+                this.master[i] = sortObjectByKeys(this.master[i]);
+            }
+
+            // sort entirety by _id
+            this.master.sort( function(a,b){ return a._id - b._id } );
+
+            // renumber starting at 1
+            for ( var i = 0, l = this.master.length; i < l; i++ ) {
+                this.master[i]._id = 1 + i;
+            }
+        },
+
         //////////////////////////////////////////////////
         //
         // private methods (not returned in constructor)

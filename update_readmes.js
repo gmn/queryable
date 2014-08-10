@@ -3,7 +3,7 @@
 var fs = require('fs');
 var f = fs.readFileSync('package.json',{encoding:'utf8'});
 var o = JSON.parse(f);
-var packageREADME = o.readme;
+var package_json_README = o.readme;
 var README = fs.readFileSync('README.md',{encoding:'utf8'});
 
 /// expecting a CALLBACK(), and, space-separated string like an actual commandline
@@ -41,7 +41,7 @@ function system( callback, commandline )
   });
 }
 // write readme and diff against it, then remove it
-var pkg_readme = './1234wxyz_tmp.txt';
+var pkg_readme = 'tmp_' + (Math.random()+'').slice(-4) + '.txt';
 
 var finish_callback = function(s) { 
   process.stdout.write(s); 
@@ -60,7 +60,7 @@ var finish_callback = function(s) {
 };
 
 // write file to diff
-fs.writeFileSync( pkg_readme, packageREADME, {encoding:'utf8'} );
+fs.writeFileSync( pkg_readme, package_json_README, {encoding:'utf8'} );
 
 // do diff and then finish
 system( finish_callback, "diff README.md " + pkg_readme );
