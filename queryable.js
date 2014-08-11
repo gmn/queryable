@@ -945,6 +945,9 @@
                     var eltval = array[j][eltkey];
                     var test = { key:eltkey, value:eltval };
 
+                    if ( !row[test.key] )
+                        continue;
+
                     var clausetype = this.detect_clause_type( eltkey, eltval );
 
                     switch ( clausetype )
