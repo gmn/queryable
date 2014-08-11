@@ -945,16 +945,13 @@
                     var eltval = array[j][eltkey];
                     var test = { key:eltkey, value:eltval };
 
-                    if ( !row[test.key] )
-                        continue;
-
                     var clausetype = this.detect_clause_type( eltkey, eltval );
 
                     switch ( clausetype )
                     {
                     case "CLAUSE_NORMAL":
                         if ( type_of( test.value ) === "regexp" ) {
-                            if ( row[test.key].match( test.value ) ) {
+                            if ( row[test.key] && row[test.key].match( test.value ) ) {
                                 res.push( row );
                                 continue next_row;
                             }
