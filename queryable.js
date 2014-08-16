@@ -1,52 +1,29 @@
 /**
+    queryable.js    
 
-    queryable.js    A tiny, self-contained, single file database parser that
-                    uses clear-text, human readable JSON for storage. 
-                    It supports a small, useful subset of MongoDB-like commands.
+    A tiny, self-contained, single file database parser that
+    uses clear-text, human readable JSON for storage. 
+    It supports a small, useful subset of MongoDB-like commands.
 
-                    The DB is a array of objects, which are stored as a 
-                    plaintext JSON string. It works in both node and the browser. 
-                    Its main difference from Mongo is that there are no collections.
-                    There is a queryable object, which is used for creating db_objects.
-                    You can have as many db_objects as you like, but have to keep 
-                    track of them yourself.
+    The DB is a array of objects, which are stored as a 
+    plaintext JSON string. It works in both node and the browser. 
+    Its main difference from Mongo is that there are no collections.
+    There is a queryable object, which is used for creating db_objects.
+    You can have as many db_objects as you like, but have to keep 
+    track of them yourself.
 
-                    (C) 2014 Greg Naughton
+                            (c) 2014 
+                          Greg Naughton
+                        greg@naughton.org
+                      https://github.com/gmn
 
-                    For more details, documentation, new releases and code go to:
-
-                        https://github.com/gmn/queryable 
-
-    Examples:
-
-        // ex.1 - Simplest
-        var queryable = require('queryable');
-        // opens db if one is found matching 'database_name'; 
-        //  otherwise creates new db with that name
-        var db = queryable.open('database_name'); 
-        db.insert({record:"new record"});
-        // returns db_result object, sorts it, limited to the top-5 results
-        var res = db.find({record:"matching term"}).sort({record:1}).limit(5);
-        // nothing is written to file (or browser) until save() is called
-        db.save(); 
-
-        // ex.2 - populate from string
-        var queryable = require('queryable');
-        // can be either string or object
-        var str = '[{"name":"Cathy"},{"name":"Carol","sex":"f"},{"name":"John","sex":"m"}]';
-        var db = queryable.open( {"db_name":"Test1","data":str} ); 
-        // get names
-        var res = db.find( {name:/^C/} );
-        res._data.forEach(function(x){
-          console.log(x.name);
-        });
-        // Cathy
-        // Carol
+    For more details, documentation, new releases and code see:
+      https://github.com/gmn/queryable 
 */
 
 (function(queryable) 
 {
-//    'use strict';
+    'use strict';
 
     //////////////////////////////////////////////////
     //
@@ -416,7 +393,7 @@
                 var highest = 0;
                 var any_missing = false;
                 this.master.forEach(function(row) {
-                    if ( ! row['_id'] )
+                    if ( row['_id'] === undefined )
                         any_missing = true;
                     else if ( row['_id'] > highest ) {
                         highest = row['_id'];
@@ -425,15 +402,8 @@
 
                 // rows w/o _id need to have one added 
                 if ( any_missing ) {
-                    /*
-                    this.master.forEach(function(r) {
-                        if ( !r['_id'] ) {
-                            r['_id'] = ++highest;
-                        }
-                    }); */
-
                     for ( var i = 0, l = this.master.length; i < l; i++ ) {
-                        if ( ! this.master[i]['_id'] ) {
+                        if ( this.master[i]['_id'] === undefined ) {
                             this.master[i] = addToFront( this.master[i], '_id', ++highest );
                         }
                     }
@@ -443,27 +413,12 @@
                 
                 // sort in place ?
                 // - sort each object
-                // - sort array by leading keys
+                // ...
+                // - sort by _id, ensuring consistent state of ascending _id
+                this.master = this.master.sort(function(a,b){return a._id - b._id});
             }
-
-            /* 
-            return {
-                db_name: this.db_name,
-                db_dir: this.db_dir,
-                db_path: this.db_path,
-
-                save: this.save,
-                insert: this.insert,
-                update: this.update,
-                find: this.find,
-                remove: this.remove,
-                get_json: this.get_json,
-                now: this.now,
-                count: this.count
-            }; */
         } // finish_db_setup
     }
-
     db_object.prototype = {
 
         //////////////////////////////////////////////////
@@ -532,7 +487,6 @@
                 }
 
                 if ( !obj["_id"] ) {
-//                    obj["_id"] = ++that._id;
                     obj = addToFront( obj, '_id', ++that._id );
                 }
 
@@ -556,13 +510,14 @@
 
         /**
          *
-         * update
+         * update()
          *
-            options:
-              upsert - If set to true, creates a new document when no document matches the query criteria. default is false
-              multi - If set to true, updates multiple documents that meet the query criteria. If set to false, updates one document. default is false.
-
-            returns the number of rows altered
+         * options:
+         *   upsert - If true, creates a new document when no document matches the query criteria. default is false
+         *   multi - If true, updates multiple documents that meet query criteria. 
+         *            Otherwise updates only one document. Default is false.
+         *
+         *  returns the number of rows altered
          */
         update: function( query, _update, options ) 
         {
@@ -1001,7 +956,6 @@
                         break;
                     default:
                         break;
-                        //p( "NOT HANDLING CLAUSE TYPE: \"" + clausetype + '"' );
                     }
                 }
             }
@@ -1040,7 +994,6 @@
                     break;
                 default:
                     break;
-                    //p( "NOT HANDLING CLAUSE TYPE: \"" + clausetype + '"' );
                 }
             }
 
