@@ -461,9 +461,8 @@
                 } else {
                     throw new Error("save: accepts 0, 1 or 2 arguments, eg.: save(), save(mode), save(mode,callback), or save(callback)" );
                 }
-            } else { 
-                throw new Error("save: usage: save(mode, callback)" );
             }
+
 
             if ( this.platform === "node_module" ) 
             {
