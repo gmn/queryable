@@ -9,38 +9,38 @@ Queryable - A tiny, single file database written in Javascript, that emulates a 
 ### Some examples of using queryable.js in node.js:
 
 ```js
-var queryable = require( 'queryable' );     
+var queryable = require( 'queryable' );
 
 // There are multiple ways to open a db.
-// The simplest is to provide a path to a database file. Eg. "~/code/mydata.db"
-var db = queryable.open( path_to_db );      
+// The simplest is to provide a full path to where you want your database file.
+var db = queryable.open( "~/code/mydata.db" );
 
 // ..or you can simply name it, which will start an empty db with this name:
 var db = queryable.open( "Database_Name" ); 
 
-// ..or you can load from a json object, that is an Array of Objects. Eg. [{key:val,key2:...},{key:val}, ...]
-var db = queryable.open( {db_name:"name",data: JSONObject} ); 
+// ..or you can load from a json object, that is an Array of Objects.
+var db = queryable.open( {db_name:"name",data: [{key:val,key2:val2},{key:val},...] } );
 
 // insert any type of key:value pairs you want
 db.insert( {key:"Anything you want", comment:"fields don't have to match",keys:"keys can be anything"} );
 
-// Multiple databases can be opened at the same time. Each is fully independent.
-var db2 = queryable.open( "~/another.db" );   
+// Multiple databases can be opened at the same time. Each is independent of the other like a collection.
+var db2 = queryable.open( "~/another.db" );
 
 // It handles any kind of value types that can be stored in vanilla JSON
-db2.insert( {subarray:[1,2,'buckle',{'my':'shoe'}]} ); 
+db2.insert( {subarray:[1,2,'buckle',{'my':'shoe'}]} );
 
-// find() works like Mongo; RegExp's are good.
-var res = db.find( /regex/ );
+// find() works like Mongo; RegExp's are fine
+var res = db.find( {key:/regex/} );
 
-// give me all rows where (age === 40)
+// SELECT * WHERE (age = 40);
 var res = db.find( {age:40} );
 
 // all rows where age is over 40
 // supports: $gt, $lt, $gte, $lte, $ne, $exists
 var res = db.find( {age: {'$gt':40}} );
 
-// the first 10 rows where age is over 40 and 'name' exists, alphabetically sorted by name
+// the first 10 rows where age is over 40 and 'name' exists, sorted by name
 var res = db.find({age:{$gt:40},name:{'$exists':true}}).sort({name:1}).limit(10);
 
 // find() returns db_result, which has a length property and rows[] array
@@ -62,21 +62,21 @@ var db = queryable.open({db_name:"MyDatabase",data:json_string});
 db.remove({name:'Cathy'});
 
 // get names that start with 'C'
-var res = db.find({name:/^C/});
-
-console.log( db.db_name + ' contains these names that start with C:' );
-res.rows.forEach(function(x){
-  console.log(' ' + x.name);
+db.find({name:/^C/}, function(res) {
+  console.log( db.db_name + ' contains these names that start with C:' );
+  res.rows.forEach(function(x){
+    console.log(' ' + x.name);
+  });
 });
 
-/* output:
+/* outputs:
 MyDatabase contains these names that start with C:
  Carol
  Cornelius
 */
 ```
 
-Node idiomatic callbacks work now too.
+Callbacks work now too (finally):
 
 ```js
   db.distinct('name',{age:{$lte:35}},function(res) {

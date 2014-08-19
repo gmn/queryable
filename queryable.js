@@ -653,7 +653,6 @@
          *    arg2 (Optional): clause to limit set to match against, Object
          *    arg3 (Optional): callback Function
          * - examples: distinct('key'), distinct('key',{price:{$gt:10}})
-         *
          */
         distinct: function( str, clause, callback ) 
         {
@@ -790,6 +789,7 @@
                 this.master[i]._id = 1 + i;
             }
         }, // renormalize
+
 
         //////////////////////////////////////////////////
         //
