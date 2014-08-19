@@ -202,10 +202,10 @@
     function db_result( arg ) 
     {
         this.length = 0;
-        this._data = [];            
+        this.rows = [];
 
         // sort of a copy-constructor. If Array of Obj is passed in,
-        //  we clone it into _data 
+        //  we copy (not reference) it into rows
         if ( arguments.length === 1 && type_of(arg) === "array" ) 
         {
             for ( var i = 0, l = arg.length; i < l; i++ ) {
@@ -217,8 +217,8 @@
     db_result.prototype = {
         push: function( O ) {
             if ( type_of(O) === "object" )
-                this._data.push(JSON.parse(JSON.stringify(O)));
-            this.length = this._data.length;
+                this.rows.push(JSON.parse(JSON.stringify(O)));
+            this.length = this.rows.length;
             return this;
         },
 
@@ -232,7 +232,7 @@
             var key = _firstKey(O);
             var val = O[key];
 
-            this._data.sort(function(a,b) 
+            this.rows.sort(function(a,b) 
             {
                 if ( !a[key] )
                     return -val;
@@ -251,8 +251,8 @@
             var lim = Number(_l);
             if ( type_of(lim) !== "number" )
                 return this;
-            this._data.splice( lim, this._data.length - lim );
-            this.length = this._data.length;
+            this.rows.splice( lim, this.rows.length - lim );
+            this.length = this.rows.length;
             return this;
         },
 
@@ -260,22 +260,22 @@
             var skp = Number(s);
             if ( type_of(skp) !== "number" )
                 return this;
-            this._data.splice( 0, skp );
-            this.length = this._data.length;
+            this.rows.splice( 0, skp );
+            this.length = this.rows.length;
             return this;
         },
 
         count: function() {
-            return this._data.length;
+            return this.rows.length;
         },
 
         getArray: function() {
-            return this._data;
+            return this.rows;
         },
         get_json: function(fmt) {
             if ( arguments.length === 0 )
-                return JSON.stringify(this._data);
-            return JSON.stringify(this._data,null,fmt);
+                return JSON.stringify(this.rows);
+            return JSON.stringify(this.rows,null,fmt);
         },
         print: function(fmt) {
             var f = arguments.length === 0 ? '  ' : fmt;
@@ -425,8 +425,46 @@
         //
         // public methods
         //
-        save: function(_mode) 
+
+        /**
+         * save()
+         * - return: true on successful write
+         * - takes: 
+         *    arg1 (Optional): filemode (String or Number), or Callback
+         *    arg2 (Optional): callback function (optional)
+         */
+        save: function(arg1, arg2) 
         {
+            var _mode = undefined;
+            var callback = undefined;
+
+            // sanity check arguments
+            if ( arguments.length === 1 ) {
+              if ( type_of(arg1) === "function" ) {
+                  callback = arg1;
+              } else {
+                  var num = Number(arg1);
+                  if ( !isNaN(num) ) {
+                      _mode = num;
+                  } else {
+                      throw new Error("save: accepts 0, 1 or 2 arguments, eg.: save(), save(mode), save(mode,callback), or save(callback)" );
+                  }
+              }
+            } else if ( arguments.length === 2 ) {
+                if ( type_of(arg2) !== "function" )
+                    throw new Error("save: usage: save(mode, callback)" );
+                callback = arg2;
+
+                var num = Number(arg1);
+                if ( !isNaN(num) ) {
+                    _mode = num;
+                } else {
+                    throw new Error("save: accepts 0, 1 or 2 arguments, eg.: save(), save(mode), save(mode,callback), or save(callback)" );
+                }
+            } else { 
+                throw new Error("save: usage: save(mode, callback)" );
+            }
+
             if ( this.platform === "node_module" ) 
             {
                 var mode = _mode || 438; // 0666;
@@ -457,90 +495,101 @@
                             var gzdata = gz1 + gz2;
                             fs.writeFileSync( this.db_path, gzdata, {encoding:"binary",mode:mode,flag:'w'} );
                         }
-                        return true;
-                    } catch(e){}
-                } 
+                        return this.__return( true, callback );
+                    } catch(e) {
+                        return this.__return( e, callback );
+                    }
+                }
 
                 try {
                     fs.writeFileSync( this.db_path, JSON.stringify(this.master), {encoding:"utf8",mode:mode,flag:'w'} );
                 } catch(e) {
-                    console.log( "queryable: error: failed writing: \""+this.db_path+'"' );
-                    return false;
+                    throw new Error( "save: failed writing: \""+this.db_path+'" '+e.toString() );
                 }
 
             } else if ( this.platform === "browser" ) {
                 localStorage[this.db_name] = JSON.stringify(this.master);
             }
-            return true;
-        }, // this.save
 
-        // returns last _id insert
-        insert: function( Arg ) 
+            return this.__return( true, callback );
+        }, // save
+
+        /**
+         * insert()
+         * - return: the number of rows inserted. 
+         * - takes: 
+         *    arg1: Object or Array of Objects to insert
+         *    arg2 (Optional): Callback 
+         * - throws Error on malformed insert
+         */
+        insert: function( Arg, callback ) 
         {
-            var id_set = -1;
+            if ( arguments.length !== 1 && arguments.length !==2 )
+                throw new Error("insert: accepts 1 or 2 arguments: insert(row [,callback])");
+
             var that = this;
 
             function insert_one( obj )
             {
-                if ( type_of( obj ) !== "object" ) {
-                    return -1;
-                }
-
-                if ( !obj["_id"] ) {
+                if ( type_of(obj) !== 'object' ) 
+                    throw new Error("insert: row element must be Object");
+                // _id magically placed on the front of new object-rows
+                if ( !obj["_id"] ) 
                     obj = addToFront( obj, '_id', ++that._id );
-                }
-
                 that.master.push(obj);
-
-                return obj["_id"];
+                return 1;
             }
 
-
-            if ( type_of( Arg ) === "array" ) 
-            {
+            var num_rows = 0;
+            if ( type_of( Arg ) === "array" ) {
                 for ( var i = 0, l = Arg.length; i < l; i++ ) {
-                    id_set = insert_one( Arg[i] );
+                    num_rows += insert_one( Arg[i] );
                 }
+            } else if ( type_of( Arg ) === "object" ) {
+                num_rows += insert_one(Arg);
             } else {
-                id_set = insert_one( Arg );
+                throw new Error("insert: accepts Object or Array of Objects");
             }
 
-            return id_set;
-        }, // this.insert
+            return this.__return(num_rows, callback);
+        }, // insert
 
         /**
-         *
          * update()
-         *
-         * options:
-         *   upsert - If true, creates a new document when no document matches the query criteria. default is false
-         *   multi - If true, updates multiple documents that meet query criteria. 
-         *            Otherwise updates only one document. Default is false.
-         *
-         *  returns the number of rows altered
+         * - return: number of rows altered
+         * - takes:
+         *    arg1: query Object
+         *    arg2: update Object
+         *    arg3 (Optional): options Object
+         *    arg4 (Optional): callback Function
+         * - options:
+         *   upsert - If true, creates a new row if none matches.
+         *              Default is false
+         *   multi  - If true, updates multiple rows that match query.
+         *              Otherwise, limit updates to only one document. 
+         *              Default is false.
          */
-        update: function( query, _update, options ) 
+        update: function( query, _update, options, callback ) 
         {
             if ( arguments.length < 2 )
-                return 0;
+                throw new Error("usage: update(query,update,[options],[callback])");
 
-            if ( type_of(query) !== "object" ||
-                type_of(_update) !== "object" )
-                return 0;
+            if ( type_of(query) !== "object" || type_of(_update) !== "object" )
+                throw new Error("usage: update(query,update,[options],[callback])");
 
             if ( arguments.length === 3 && type_of(options) !== "object" )
-                return 0;
+                throw new Error("usage: update(query,update,[options],[callback])");
 
             var set = _update['$set'];
             if ( !set )
-                return 0;
+                throw new Error("usage: update(query,update,[options],[callback])");
 
             // these are the rows we're updating
             var res = this.do_query( query );
 
             var do_multi = false, do_upsert = false;
 
-            if ( arguments.length === 3 ) {
+            if ( options ) {
                 do_multi = options['multi'] ? options['multi'] : false;
                 do_upsert = options['upsert'] ? options['upsert'] : false;
             }
@@ -548,7 +597,7 @@
             // chance to upsert
             if ( res.length === 0 && do_upsert ) {
                 this.insert( set );
-                return 1;
+                return this.__return( 1, callback );
             }
 
             var rows_altered = 0;
@@ -574,66 +623,93 @@
                     break; // do 1 row only 
             }
 
-            return rows_altered;
-        }, // this.update
+            return this.__return(rows_altered, callback);
+        }, // update
 
-        find: function( match ) 
+        /**
+         * find()
+         * - return: db_result
+         * - takes: 
+         *    arg1 (Optional): match Object, 
+         *    arg2 (Optional): callback Function
+         */
+        find: function( match, callback ) 
         {
+            if ( !match )
+                match = {};
+            if ( arguments.length > 2 || type_of(match)!=="object" )
+                throw new Error( "find: usage: find([match],[callback])" );
             var res = this.do_query( match );
             var dbres = new db_result( res );
-            res = null;
-            return dbres;
-        }, // this.find
+            return this.__return( dbres, callback );
+        }, // find
 
-        //eliminates duplicate rows from the result
-        //- distinct( 'key' )
-        //- distinct( 'key', { price: { $gt: 10 } } )
-        distinct: function( str, clause ) {
-            if ( arguments.length === 1 ) {
-              var res = this.do_query();
-            } else if ( arguments.length > 1 ) {
+        /*
+         * distinct()
+         * - about: eliminates duplicate rows from the result
+         * - return: db_result
+         * - takes: 
+         *    arg1: key to get distinct set of, String
+         *    arg2 (Optional): clause to limit set to match against, Object
+         *    arg3 (Optional): callback Function
+         * - examples: distinct('key'), distinct('key',{price:{$gt:10}})
+         *
+         */
+        distinct: function( str, clause, callback ) 
+        {
+            if ( str === undefined )
+                throw new Error("usage: distinct(key,[clause],[callback])");
+            if ( clause ) {
               var res = this.do_query(clause);
             } else {
               var res = this.do_query();
             }
 
-            var set = [];
+            var set_wo = [];
             var maybe = [];
-            for ( var i = 0; i < res.length; i++ ) {
-                // every row that has key gets put in a contingent array to be thinned
+            for ( var i = 0, l = res.length; i < l; i++ ) {
+                // every row that has key gets put in an array to be thinned
                 if ( res[i][str] !== undefined ) {
                     maybe.push(res[i]);
-                // every row that doesn't have key goes to set[]
-                } else {
-                    set.push(res[i]);
+                // every row that doesn't have key goes to set_wo[]
+/*              } else {
+                    set_wo.push(res[i]); */
                 }
             }
 
-            var vals = [];
-            for ( var i = 0; i < maybe.length; i++ ) {
-                if ( !( vals.some(function(x){return x[str] === maybe[i][str];}) ) )
-                    vals.push( maybe[i] );
+            var distinct_set = [];
+            for ( var i = 0, l = maybe.length; i < l; i++ ) {
+                if ( !(distinct_set.some(function(x){return x[str] === maybe[i][str]})) )
+                    distinct_set.push( maybe[i] );
             }
 
-            var dbres = new db_result( set.concat(vals) );
-            res = null;
-            return dbres;
-        },
+            // FIXME: I dont know why you'd put rows in the return set that
+            //        dont contain the key... wtf was I thinking?
+            //var dbres = new db_result( set_wo.concat(distinct_set) );
 
-        // returns number rows altered
-        remove: function( constraints ) 
+            var dbres = new db_result( distinct_set );
+            res = null;
+            return this.__return(dbres, callback);
+        }, // distinct
+
+        /** 
+         * remove()
+         * - return: number rows altered 
+         * - takes:
+         *    arg1 (Optional): constraints
+         *    arg2 (Optional): callback, Function
+         */
+        remove: function( constraints, callback ) 
         {
             if ( arguments.length === 0 )
                 var constraints = {};
             if ( type_of(constraints) !== "object" )
-                return 0;
-
-            var rows_altered = 0;
+                throw new Error("usage: remove( [constraints], [callback] )" );
 
             // get the rows to remove
             var rows = this.do_query( constraints );
             if ( rows.length === 0 )
-                return 0; 
+                return this.__return( 0, callback );
         
             var rmids = [];
 
@@ -646,8 +722,9 @@
             }
 
             if ( rmids.length === 0 )
-                return 0;
+                return this.__return( 0, callback );
 
+            var rows_altered = 0;
             var new_master = this.master.filter(function(row) {
                 for ( var i = 0, l = rmids.length; i < l; i++ ) {
                     if ( row['_id'] && row['_id'] === rmids[i] ) {
@@ -661,18 +738,18 @@
             if ( rows_altered > 0 )
                 this.master = new_master;
             
-            return rows_altered;
+            return this.__return( rows_altered, callback );
+        }, // remove
 
-        }, // this.remove
 
         get_json: function() {
             return JSON.stringify( this.master );
-        }, // this.get_json
+        }, // get_json
 
         print: function(fmt) {
             var f = arguments.length === 0 ? '  ' : fmt;
             console.log( JSON.stringify(this.master,null,f) );
-        },
+        }, // print
     
         now: function() 
         {
@@ -686,19 +763,20 @@
                     (n.getMonth()+1) + '-' + 
                     n.getDate() + 'T' + 
                     n.toUTCString().replace( /.*(\d\d:\d\d:\d\d).*/, "$1" ) + '.000Z';
-        }, // this.now
+        }, // now
 
         // returns date object set to ISO string input
         toDate: function( isostring )
         {
             return new Date( isostring );
-        },
+        }, // toDate
 
         count: function() {
             return this.master.length;
-        },
+        }, // count
 
-        renormalize: function() {
+        renormalize: function() 
+        {
             // sort each row elements
             for ( var i = 0, l = this.master.length; i < l; i++ ) {
                 this.master[i] = sortObjectByKeys(this.master[i]);
@@ -711,12 +789,18 @@
             for ( var i = 0, l = this.master.length; i < l; i++ ) {
                 this.master[i]._id = 1 + i;
             }
-        },
+        }, // renormalize
 
         //////////////////////////////////////////////////
         //
         // private methods (not returned in constructor)
         //
+
+        __return: function( arg, callback ) {
+            if ( callback )
+                return callback(arg);
+            return arg;
+        },
 
         // query matching functions
         detect_clause_type: function( key, value )
@@ -1142,9 +1226,9 @@
                     that.db_path = that.db_dir + '/' + that.db_name;
             }
     
-            var _data = config && config.data ? config.data : undefined;
+            var rows = config && config.data ? config.data : undefined;
 
-            return new db_object( {db_path:that.db_path,db_dir:that.db_dir,db_name:that.db_name,"platform":that.platform,use_gzip:that.use_gzip,data:_data} );
+            return new db_object( {db_path:that.db_path,db_dir:that.db_dir,db_name:that.db_name,"platform":that.platform,use_gzip:that.use_gzip,data:rows} );
         } // server_open()
 
     }; // queryable.open

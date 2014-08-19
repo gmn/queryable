@@ -1,7 +1,7 @@
 Queryable JS
------------
+------------
 
-Queryable - A tiny, single file database written in Javascript, that emulates a functional subset of mongodb commands. It works in both browser and server (node.js). The database itself is stored as a json string. Unlike mongo there are no collections; A separate db is simply returned by each call to open(). Essentially, queryable facilitates structured querying of an array of objects.
+Queryable - A tiny, single file database written in Javascript, that emulates a functional subset of mongodb commands. It works in both browser and server. The database itself is stored as a json string. Unlike mongo there are no collections; a separate db is simply returned by each call to open(). Essentially, queryable facilitates structured querying of an array of objects.
 
 
 ## Examples
@@ -11,58 +11,99 @@ Queryable - A tiny, single file database written in Javascript, that emulates a 
 ```js
 var queryable = require( 'queryable' );     
 
-var db = queryable.open( path_to_db );      // ** There are multiple ways to open a db.
-                                            //    The simplest is a string of the path
-                                            //    and filename to where you want it. Eg. "/tmp/my_data.db"
+// There are multiple ways to open a db.
+// The simplest is to provide a path to a database file. Eg. "~/code/mydata.db"
+var db = queryable.open( path_to_db );      
 
+// ..or you can simply name it, which will start an empty db with this name:
 var db = queryable.open( "Database_Name" ); 
-var db = queryable.open( {db_name:"name",data: JSONObject } ); // loads from json object, that is Array of Objects
-                                            //    eg. [{name:1},{name:2}, ...]
 
+// ..or you can load from a json object, that is an Array of Objects. Eg. [{key:val,key2:...},{key:val}, ...]
+var db = queryable.open( {db_name:"name",data: JSONObject} ); 
+
+// insert any type of key:value pairs you want
 db.insert( {key:"Anything you want", comment:"fields don't have to match",keys:"keys can be anything"} );
 
-var db2 = queryable.open( "another.db" );   // ** Multiple databases can be opened at once; each is fully independent.
+// Multiple databases can be opened at the same time. Each is fully independent.
+var db2 = queryable.open( "~/another.db" );   
 
-db2.insert( {subarray:[1,2,'buckle',{'my':'shoe'}]} ); // will insert the whole object, no sweat
+// It handles any kind of value types that can be stored in vanilla JSON
+db2.insert( {subarray:[1,2,'buckle',{'my':'shoe'}]} ); 
 
-var res = db.find( /regex/ );               // ** Find() command works like Mongo
-var res = db.find( {key: {'$gt':4}} );      //    all where key > 4
-var res = db.find({name:{'$exists':true}}).sort({name:-1})  // only rows where 'name' exists, and sort by name DESC
+// find() works like Mongo; RegExp's are good.
+var res = db.find( /regex/ );
 
-                                            // ** Returns db_result, which has a length property and _data[] array
-                                            //    as well as chainable methods like: .sort(), .limit(), .skip(), ..
+// give me all rows where (age === 40)
+var res = db.find( {age:40} );
 
-//
-// a real example - populate from string
-//
+// all rows where age is over 40
+// supports: $gt, $lt, $gte, $lte, $ne, $exists
+var res = db.find( {age: {'$gt':40}} );
+
+// the first 10 rows where age is over 40 and 'name' exists, alphabetically sorted by name
+var res = db.find({age:{$gt:40},name:{'$exists':true}}).sort({name:1}).limit(10);
+
+// find() returns db_result, which has a length property and rows[] array
+// as well as chainable methods like: .sort(), .limit(), .skip(), ..
+console.log( 'got ' + res.length + ' rows' );
+
+
+/*
+ * a real example - populate from string
+ */
+// literal data can be a string or an object 
+var json_string = '[{"name":"Cathy"},{"name":"Carol","sex":"f"},{"name":"John","sex":"m"},{"name":"Cornelius"}]';
+
 var queryable = require('queryable');
-// this can be a string or an object 
-var db_string = '[{"name":"Cathy"},{"name":"Carol","sex":"f"},{"name":"John","sex":"m"},{"name":"Cornelius"}]';
-var db = queryable.open({db_name:"MyFunkyDatabase",data:db_string}); 
-// remove one for good measure
+
+var db = queryable.open({db_name:"MyDatabase",data:json_string}); 
+
+// delete a row
 db.remove({name:'Cathy'});
-// get names
+
+// get names that start with 'C'
 var res = db.find({name:/^C/});
-console.log( db.db_name + ' has these names that start with C:' );
-res._data.forEach(function(x){
+
+console.log( db.db_name + ' contains these names that start with C:' );
+res.rows.forEach(function(x){
   console.log(' ' + x.name);
 });
-// MyFunkyDatabase contains these names that start with C:
-//  Carol
-//  Cornelius
+
+/* output:
+MyDatabase contains these names that start with C:
+ Carol
+ Cornelius
+*/
 ```
+
+Node idiomatic callbacks work now too.
+
+```js
+  db.distinct('name',{age:{$lte:35}},function(res) {
+    res.rows.forEach(function(row){
+      console.log( row.name );
+    });
+  });
+```
+
 See the 'examples' folder for more examples of usage.
 
 ## Install
-To install: 
+To install using npm: 
 
 ```
 npm install queryable
 ```
-To install in your project and append it to your project's `package.json`: 
+To install in your project, appending to your project's `package.json`: 
 
 ```
 npm install queryable --save
+```
+
+To install using git:
+
+```
+~$ git clone https://github.com/gmn/queryable.git
 ```
 
 ## Test
@@ -170,7 +211,7 @@ If argument is an object, these configuration variable are looked for in it:
  
 2. Feature Roadmap: which features will be implemented next, roughly in order.
   * [X] better documentation for open() 
-  * [] callbacks
+  * [X] callbacks
   * [] .findOne() 
   * [] better documentation for update() 
   * [] $in, $nin
@@ -193,7 +234,7 @@ If argument is an object, these configuration variable are looked for in it:
 ## License
 (The MIT License)
 
-Copyright 2014 No Genius Software. All rights reserved.
+Copyright 2014 Greg Naughton. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

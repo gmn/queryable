@@ -37,7 +37,7 @@ document.body.onkeydown = function(e) {
 
 function rows_render()
 {
-    var res = db.find(/.*/).sort( {time:1} ); // all rows
+    var res = db.find().sort( {time:1} ); // all rows
     var inforows = document.getElementById('inforows');
 
     do {
@@ -47,7 +47,7 @@ function rows_render()
         inforows.removeChild( last );
     } while (1);
 
-    res._data.forEach(function(val,i){
+    res.rows.forEach(function(val,i){
         var e = document.createElement('div');
         e.innerHTML = val.text;
         inforows.appendChild(e);

@@ -1,0 +1,21 @@
+CHANGELOG
+
+V0.3.0
+
+  Major Release: v0.3.0. Not backwards compatible. Added Callbacks support.
+
+List of changes:
+
+- changed '_data' member of db_result to 'rows', to make it less obscure.
+- tidied the documentation
+- added callbacks to:
+   - db.save()
+   - db.insert()
+   - db.update()
+   - db.find()
+   - db.distinct()
+   - db.remove()
+- audited and revised error handling in callback bearing functions
+- db.insert() now returns number of rows inserted, or throws Error for 
+    malformed inserts. This way the client application sees malformed inserts immediately, instead of allowing for the chance they miss them, and propagate hard to find bad data in the client application.
+

@@ -5,7 +5,7 @@ var queryable = require('../queryable');
 var db = queryable.open();
 db.insert( [{movie:"Jaws",director:"Stephen Spielberg"},{movie:"Stalker",director:"Andrej Tarkovski",rating:"5/5"},{movie:"Caddy Shack",rating:"4/5"}] );
 
-var res = db.find(/.*/);
+var res = db.find();
 p(json(res));
 
 res = db.find( {director:{$exists:true}} );
