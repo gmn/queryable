@@ -562,11 +562,10 @@
          *    arg3 (Optional): options Object
          *    arg4 (Optional): callback Function
          * - options:
-         *   upsert - If true, creates a new row if none matches.
+         *    upsert - If true, creates a new row if none matches.
          *              Default is false
-         *   multi  - If true, updates multiple rows that match query.
-         *              Otherwise, limit updates to only one document. 
-         *              Default is false.
+         *    multi  - If true, updates multiple rows matching query.
+         *              Default is to limit update to only one document. 
          */
         update: function( query, _update, options, callback ) 
         {
