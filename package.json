@@ -14,7 +14,7 @@
     "package.json"
   ],
   "scripts": {
-    "test": "cd examples; node ./unit_tests.js;"
+    "test": "cd examples; node ./unit_tests.js; node ./unit-min.js;"
   },
   "repository": {
     "type": "git",

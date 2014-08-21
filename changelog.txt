@@ -1,8 +1,10 @@
 CHANGELOG
 
+==================================================================
+
 V0.3.0
 
-  Major Release: v0.3.0. Not backwards compatible. Added Callbacks support.
+  Major Release: v0.3.0. Not backwards compatible with v0.2.9 or before. 
 
 List of changes:
 
@@ -15,7 +17,9 @@ List of changes:
    - db.find()
    - db.distinct()
    - db.remove()
-- audited and revised error handling in callback bearing functions
+- audited and revised error handling in callback bearing functions.
+    These now "throw" on any errors resulting from bad input
 - db.insert() now returns number of rows inserted, or throws Error for 
     malformed inserts. This way the client application sees malformed inserts immediately, instead of allowing for the chance they miss them, and propagate hard to find bad data in the client application.
 
+==================================================================

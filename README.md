@@ -18,16 +18,16 @@ var db = queryable.open( "~/code/mydata.db" );
 // ..or you can simply name it, which will start an empty db with this name:
 var db = queryable.open( "Database_Name" ); 
 
-// ..or you can load from a json object, that is an Array of Objects.
+// You can load from a json object that is an Array of Objects.
 var db = queryable.open( {db_name:"name",data: [{key:val,key2:val2},{key:val},...] } );
 
 // insert any type of key:value pairs you want
-db.insert( {key:"Anything you want", comment:"fields don't have to match",keys:"keys can be anything"} );
+db.insert( {key:"keys can be Anything", comment:"fields don't have to match"} );
 
-// Multiple databases can be opened at the same time. Each is independent of the other like a collection.
+// Like collections, many independent db can be open at the same time
 var db2 = queryable.open( "~/another.db" );
 
-// It handles any kind of value types that can be stored in vanilla JSON
+// It handles any value types
 db2.insert( {subarray:[1,2,'buckle',{'my':'shoe'}]} );
 
 // find() works like Mongo; RegExp's are fine
@@ -52,7 +52,11 @@ console.log( 'got ' + res.length + ' rows' );
  * a real example - populate from string
  */
 // literal data can be a string or an object 
-var json_string = '[{"name":"Cathy"},{"name":"Carol","sex":"f"},{"name":"John","sex":"m"},{"name":"Cornelius"}]';
+var json_string = '[
+  {"name":"Cathy"},
+  {"name":"Carol","sex":"f"},
+  {"name":"John","sex":"m"},
+  {"name":"Cornelius","sex":"m"}]';
 
 var queryable = require('queryable');
 
