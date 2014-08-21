@@ -1,7 +1,7 @@
 {
   "name": "queryable",
-  "version": "0.3.3",
-  "_id": "queryable@0.3.3",
+  "version": "0.3.4",
+  "_id": "queryable@0.3.4",
   "description": "Nosql database that supports subset of mongodb operators",
   "main": "queryable.js",
   "directories": {
