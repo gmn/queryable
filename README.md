@@ -231,7 +231,7 @@ If argument is an object, these configuration variable are looked for in it:
   * [] cleanup
 
 3. Sample projects built on queryable demonstrating features and functionality.
-  * [Simple Browser Example](http://fatolsun.com/queryable-demo/) (sourceode [here](https://raw.githubusercontent.com/gmn/queryable/master/examples/browser.html))
+  * [Simple Browser Example](http://naughton.org/queryable-demo/) (sourceode [here](https://raw.githubusercontent.com/gmn/queryable/master/examples/browser.html))
   * [Arcane Vocabulary Tutor](http://lit-tundra-5131.herokuapp.com/)
 
 
