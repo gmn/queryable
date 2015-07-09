@@ -8,13 +8,13 @@ var obj = [{"name":"Cathy"},{"name":"Carol","sex":"f"},{"name":"John","sex":"m"}
 var queryable = require( '../queryable.js' );
 
 // open, populating (loading) from a string
-var db = queryable.open( {"data":str} );
+var db = queryable.open( {"data":str,"db_path":'./'} );
 
 console.log( "populating from String:" );
 db.print(1);
 db.find().sort( {"name":-1} ).print(3);
 
-// 
+//
 console.log( "\npopulating from Object: " );
 
 db = queryable.open( {"data":obj} );
@@ -28,3 +28,5 @@ console.log( "Database name is: " + db.db_name + ' and has these people in it:' 
 db.find().rows.forEach(function(i){
     console.log(' -> ' + i.name + ' - ' + i.age);
 });
+
+db.save( {} /*force pretty print*/ )

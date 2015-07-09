@@ -1,27 +1,27 @@
 /**
-    queryable.js    
+    queryable.js
 
     A tiny, self-contained, single file database parser that
-    uses clear-text, human readable JSON for storage. 
+    uses clear-text, human readable JSON for storage.
     It supports a small, useful subset of MongoDB-like commands.
 
-    The DB is a array of objects, which are stored as a 
-    plaintext JSON string. It works in both node and the browser. 
+    The DB is a array of objects, which are stored as a
+    plaintext JSON string. It works in both node and the browser.
     Its main difference from Mongo is that there are no collections.
     There is a queryable object, which is used for creating db_objects.
-    You can have as many db_objects as you like, but have to keep 
+    You can have as many db_objects as you like, but have to keep
     track of them yourself.
 
-                            (c) 2014 
+                            (c) 2014
                           Greg Naughton
                         greg@naughton.org
                       https://github.com/gmn
 
     For more details, documentation, new releases and code see:
-      https://github.com/gmn/queryable 
+      https://github.com/gmn/queryable
 */
 
-(function(queryable) 
+(function(queryable)
 {
     'use strict';
 
@@ -88,25 +88,25 @@
         return null;
     }
 
-    // converts object {key1:val1,key2:val2,...} 
+    // converts object {key1:val1,key2:val2,...}
     // into array [{key:key1,value:val1},{key:key2,value:val2},...]
     // recurses, so: obj {key1:{key2:val2,key3:val3}} becomes:
     //  [{key:key1,value:[{key:key2,value:val2},{key:key3,value:val3}]}]
-    function _getKeys( O ) 
+    function _getKeys( O )
     {
         var keys = [];
         if ( type_of(O) !== "object" )
             return null;
-        for ( var i in O ) 
+        for ( var i in O )
         {
-            if ( O.hasOwnProperty(i) ) 
+            if ( O.hasOwnProperty(i) )
             {
-                var _val = type_of(O[i]) === "object" ? 
+                var _val = type_of(O[i]) === "object" ?
                         _getKeys(O[i]) : O[i];
 
                 if ( type_of(_val) === "array" && _val.length === 1 )
                     _val = _val[0]; // ditch the array if only 1 elt
-                    
+
                 keys.push( {key:i,value:_val} );
             }
         }
@@ -162,7 +162,7 @@
         keys.forEach(function(key) {
             newObj[key] = obj[key];
         });
-       
+
         return newObj;
     }
 
@@ -190,23 +190,23 @@
 
 
     //////////////////////////////////////////////////
-    // 
+    //
     // Classes
-    // 
+    //
 
     /**
      *
      * Class: db_result
      *
      */
-    function db_result( arg ) 
+    function db_result( arg )
     {
         this.length = 0;
         this.rows = [];
 
         // sort of a copy-constructor. If Array of Obj is passed in,
         //  we copy (not reference) it into rows
-        if ( arguments.length === 1 && type_of(arg) === "array" ) 
+        if ( arguments.length === 1 && type_of(arg) === "array" )
         {
             for ( var i = 0, l = arg.length; i < l; i++ ) {
                 this.push( arg[i] );
@@ -222,17 +222,17 @@
             return this;
         },
 
-        /* 
+        /*
          SELECT * FROM users WHERE status = "A" ORDER BY user_id ASC
            db.users.find( { status: "A" } ).sort( { user_id: 1 } )
          SELECT * FROM users WHERE status = "A" ORDER BY user_id DESC
-           db.users.find( { status: "A" } ).sort( { user_id: -1 } ) 
+           db.users.find( { status: "A" } ).sort( { user_id: -1 } )
         */
         sort: function( O ) {
             var key = _firstKey(O);
             var val = O[key];
 
-            this.rows.sort(function(a,b) 
+            this.rows.sort(function(a,b)
             {
                 if ( !a[key] )
                     return -val;
@@ -291,7 +291,7 @@
      *  - contains entire database w/ accessor methods
      *
      */
-    function db_object( config ) 
+    function db_object( config )
     {
         this.platform = config.platform;
         this.db_path = config.db_path;
@@ -304,16 +304,16 @@
 
 
         // can populate db explicitly using a json string
-        // - if {}.data set, will override the other loading methods 
+        // - if {}.data set, will override the other loading methods
         // - database will still save to named location, normally
         if ( config.data ) {
-            if ( type_of( config.data ) == "array" ) 
+            if ( type_of( config.data ) == "array" )
                 this.master = config.data ;
             else if ( type_of( config.data) == "string" )
                 this.master = JSON.parse( config.data );
-            else 
+            else
                 console.log( "queryable: error: Could not determine input data type\n" );
-            
+
             finish_db_setup.call(this);
         }
 
@@ -340,20 +340,20 @@
             var fs = require('fs');
 
             // presence of .gz extension sets use_gzip
-            if ( this.db_path.lastIndexOf('.gz') === this.db_path.length-3 ) 
+            if ( this.db_path.lastIndexOf('.gz') === this.db_path.length-3 )
                 this.use_gzip = true;
 
             // if db_path exists, load it
-            if ( fs.existsSync( this.db_path ) ) 
+            if ( fs.existsSync( this.db_path ) )
             {
                 var was_gzip = false;
 
                 // try to open with gzip; note: presence of gzbz is no longer guaranteed
-                if ( this.use_gzip ) 
+                if ( this.use_gzip )
                 {
                     try {
                         var gzbz = require('gzbz');
-                        var gunzip = new gzbz.Gunzip;        
+                        var gunzip = new gzbz.Gunzip;
                         gunzip.init( {encoding:'utf8'} );
                         var gzdata = fs.readFileSync(this.db_path,{encoding:"binary",flag:'r'});
                         var inflated = gunzip.inflate( gzdata, "binary" );
@@ -385,9 +385,9 @@
             }
         }
 
-        function finish_db_setup() 
+        function finish_db_setup()
         {
-            if ( this.master.length > 0 ) 
+            if ( this.master.length > 0 )
             {
                 // next _id is 1 greater than highest _id
                 var highest = 0;
@@ -400,7 +400,7 @@
                     }
                 });
 
-                // rows w/o _id need to have one added 
+                // rows w/o _id need to have one added
                 if ( any_missing ) {
                     for ( var i = 0, l = this.master.length; i < l; i++ ) {
                         if ( this.master[i]['_id'] === undefined ) {
@@ -408,9 +408,9 @@
                         }
                     }
                 }
-            
+
                 this._id = highest;
-                
+
                 // sort in place ?
                 // - sort each object
                 // ...
@@ -429,14 +429,15 @@
         /**
          * save()
          * - return: true on successful write
-         * - takes: 
+         * - takes:
          *    arg1 (Optional): filemode (String or Number), or Callback
          *    arg2 (Optional): callback function (optional)
          */
-        save: function(arg1, arg2) 
+        save: function(arg1, arg2)
         {
             var _mode = undefined;
             var callback = undefined;
+            var pretty = false;
 
             // sanity check arguments
             if ( arguments.length === 1 ) {
@@ -444,7 +445,10 @@
                   callback = arg1;
               } else {
                   var num = Number(arg1);
-                  if ( !isNaN(num) ) {
+                  // if object, pretty print (I know, cheeting; whatever)
+                  if ( type_of(arg1) == 'object' ) {
+                    pretty = true;
+                  } else if ( !isNaN(num) ) {
                       _mode = num;
                   } else {
                       throw new Error("save: accepts 0, 1 or 2 arguments, eg.: save(), save(mode), save(mode,callback), or save(callback)" );
@@ -464,21 +468,21 @@
             }
 
 
-            if ( this.platform === "node_module" ) 
+            if ( this.platform === "node_module" )
             {
                 var mode = _mode || 438; // 0666;
                 var fs = require('fs');
 
-                // if parent application quits suddenly, write may be voided. 
-                // writes must be ensured. perhaps a better way to do this?  Best possible case: 
-                //  have both async writes and ensured writes, even on sudden process.exit() 
+                // if parent application quits suddenly, write may be voided.
+                // writes must be ensured. perhaps a better way to do this?  Best possible case:
+                //  have both async writes and ensured writes, even on sudden process.exit()
                 var use_async = false;
-                var gzip_lvl = 1; // 5 is middle. bias heavily towards speed since using gzip makes this I/O bound 
+                var gzip_lvl = 1; // 5 is middle. bias heavily towards speed since using gzip makes this I/O bound
 
                 if ( this.use_gzip ) {
                     try {
                         if ( use_async ) {
-                            var ostream = fs.createWriteStream( this.db_path );                    
+                            var ostream = fs.createWriteStream( this.db_path );
                             var zlib = require('zlib');
                             var Stream = require('stream');
                             var in_stream = new Stream();
@@ -501,13 +505,21 @@
                 }
 
                 try {
-                    fs.writeFileSync( this.db_path, JSON.stringify(this.master), {encoding:"utf8",mode:mode,flag:'w'} );
+                    if ( pretty ) {
+                        fs.writeFileSync( this.db_path, JSON.stringify(this.master,null,2), {encoding:"utf8",mode:mode,flag:'w'} );
+                    } else {
+                        fs.writeFileSync( this.db_path, JSON.stringify(this.master), {encoding:"utf8",mode:mode,flag:'w'} );
+                    }
                 } catch(e) {
                     throw new Error( "save: failed writing: \""+this.db_path+'" '+e.toString() );
                 }
 
             } else if ( this.platform === "browser" ) {
-                localStorage[this.db_name] = JSON.stringify(this.master);
+                if ( pretty ) {
+                    localStorage[this.db_name] = JSON.stringify(this.master,null,2);
+                } else {
+                    localStorage[this.db_name] = JSON.stringify(this.master);
+                }
             }
 
             return this.__return( true, callback );
@@ -515,13 +527,13 @@
 
         /**
          * insert()
-         * - return: the number of rows inserted. 
-         * - takes: 
+         * - return: the number of rows inserted.
+         * - takes:
          *    arg1: Object or Array of Objects to insert
-         *    arg2 (Optional): Callback 
+         *    arg2 (Optional): Callback
          * - throws Error on malformed insert
          */
-        insert: function( Arg, callback ) 
+        insert: function( Arg, callback )
         {
             if ( arguments.length !== 1 && arguments.length !==2 )
                 throw new Error("insert: accepts 1 or 2 arguments: insert(row [,callback])");
@@ -530,10 +542,10 @@
 
             function insert_one( obj )
             {
-                if ( type_of(obj) !== 'object' ) 
+                if ( type_of(obj) !== 'object' )
                     throw new Error("insert: row element must be Object");
                 // _id magically placed on the front of new object-rows
-                if ( !obj["_id"] ) 
+                if ( !obj["_id"] )
                     obj = addToFront( obj, '_id', ++that._id );
                 that.master.push(obj);
                 return 1;
@@ -565,9 +577,9 @@
          *    upsert - If true, creates a new row if none matches.
          *              Default is false
          *    multi  - If true, updates multiple rows matching query.
-         *              Default is to limit update to only one document. 
+         *              Default is to limit update to only one document.
          */
-        update: function( query, _update, options, callback ) 
+        update: function( query, _update, options, callback )
         {
             if ( arguments.length < 2 )
                 throw new Error("usage: update(query,update,[options],[callback])");
@@ -617,8 +629,8 @@
                 }
                 if ( did_change )
                     ++rows_altered;
-                if ( !do_multi ) 
-                    break; // do 1 row only 
+                if ( !do_multi )
+                    break; // do 1 row only
             }
 
             return this.__return(rows_altered, callback);
@@ -627,11 +639,11 @@
         /**
          * find()
          * - return: db_result
-         * - takes: 
-         *    arg1 (Optional): match Object, 
+         * - takes:
+         *    arg1 (Optional): match Object,
          *    arg2 (Optional): callback Function
          */
-        find: function( match, callback ) 
+        find: function( match, callback )
         {
             if ( !match )
                 match = {};
@@ -646,13 +658,13 @@
          * distinct()
          * - about: eliminates duplicate rows from the result
          * - return: db_result
-         * - takes: 
+         * - takes:
          *    arg1: key to get distinct set of, String
          *    arg2 (Optional): clause to limit set to match against, Object
          *    arg3 (Optional): callback Function
          * - examples: distinct('key'), distinct('key',{price:{$gt:10}})
          */
-        distinct: function( str, clause, callback ) 
+        distinct: function( str, clause, callback )
         {
             if ( str === undefined )
                 throw new Error("usage: distinct(key,[clause],[callback])");
@@ -689,14 +701,14 @@
             return this.__return(dbres, callback);
         }, // distinct
 
-        /** 
+        /**
          * remove()
-         * - return: number rows altered 
+         * - return: number rows altered
          * - takes:
          *    arg1 (Optional): constraints
          *    arg2 (Optional): callback, Function
          */
-        remove: function( constraints, callback ) 
+        remove: function( constraints, callback )
         {
             if ( arguments.length === 0 )
                 var constraints = {};
@@ -707,12 +719,12 @@
             var rows = this.do_query( constraints );
             if ( rows.length === 0 )
                 return this.__return( 0, callback );
-        
+
             var rmids = [];
 
             // collect row _id's
             for ( var i = 0, l = rows.length; i < l; i++ ) {
-                var id = rows[i]['_id']; 
+                var id = rows[i]['_id'];
                 if ( !id )
                     continue;
                 rmids.push( id );
@@ -727,14 +739,14 @@
                     if ( row['_id'] && row['_id'] === rmids[i] ) {
                         ++rows_altered;
                         return false;
-                    } 
-                }    
+                    }
+                }
                 return true;
             });
 
             if ( rows_altered > 0 )
                 this.master = new_master;
-            
+
             return this.__return( rows_altered, callback );
         }, // remove
 
@@ -747,8 +759,8 @@
             var f = arguments.length === 0 ? '  ' : fmt;
             console.log( JSON.stringify(this.master,null,f) );
         }, // print
-    
-        now: function() 
+
+        now: function()
         {
             var n = new Date();
 
@@ -756,9 +768,9 @@
                 return n.toISOString();
             }
 
-            return n.getFullYear() + '-' + 
-                    (n.getMonth()+1) + '-' + 
-                    n.getDate() + 'T' + 
+            return n.getFullYear() + '-' +
+                    (n.getMonth()+1) + '-' +
+                    n.getDate() + 'T' +
                     n.toUTCString().replace( /.*(\d\d:\d\d:\d\d).*/, "$1" ) + '.000Z';
         }, // now
 
@@ -772,7 +784,7 @@
             return this.master.length;
         }, // count
 
-        renormalize: function() 
+        renormalize: function()
         {
             // sort each row elements
             for ( var i = 0, l = this.master.length; i < l; i++ ) {
@@ -814,10 +826,10 @@
             case "object": // CONDITIONAL | SUBDOCUMENT
                 var fk = _firstKey(value);
                 switch(fk) {
-                case '$gt': 
-                case '$gte': 
-                case '$lt': 
-                case '$lte': 
+                case '$gt':
+                case '$gte':
+                case '$lt':
+                case '$lte':
                 case '$exists':
                 case '$ne':
                     return "CLAUSE_CONDITIONAL";
@@ -849,7 +861,7 @@
                 for ( var key in row )
                 {
                     // matches our query key
-                    if ( row.hasOwnProperty(key) && key === test.key ) 
+                    if ( row.hasOwnProperty(key) && key === test.key )
                     {
                         // RegExps: equiv to SQL "like" statement
                         if ( type_of( test.value ) === "regexp" ) {
@@ -868,7 +880,7 @@
                     } // key match
 
                 } // each row key
-    
+
             } // each row
 
             return res;
@@ -920,7 +932,7 @@
                 for ( var key in row )
                 {
                     // key matches
-                    if ( row.hasOwnProperty(key) && key === test.key ) 
+                    if ( row.hasOwnProperty(key) && key === test.key )
                     {
                         switch ( cond ) {
                         case '$lt':
@@ -976,7 +988,7 @@
             {
                 var row = rows[i];
 
-                for ( var j = 0, la = array.length; j < la; j++ ) 
+                for ( var j = 0, la = array.length; j < la; j++ )
                 {
                     var eltkey = _firstKey( array[j] );
                     var eltval = array[j][eltkey];
@@ -1053,9 +1065,9 @@
                 return result;
             }
 
-            // 
+            //
         next_clause:
-            for ( var clause in clauses ) 
+            for ( var clause in clauses )
             {
                 if ( ! clauses.hasOwnProperty(clause) )
                     continue next_clause;
@@ -1063,7 +1075,7 @@
                 var clausetype = this.detect_clause_type(clause,clauses[clause]);
                 switch ( clausetype )
                 {
-                case "CLAUSE_NORMAL": // simple key/value 
+                case "CLAUSE_NORMAL": // simple key/value
                     result = this.matching_rows_NORMAL( { key: clause, value: clauses[clause] }, result );
                     break;
                 case "CLAUSE_CONDITIONAL":
@@ -1091,7 +1103,7 @@
 
 
     /**
-        - MAIN MODULE INTERFACE 
+        - MAIN MODULE INTERFACE
         - opens physical database (new one is created if non-existent)
         - returns handle to new db_object
     */
@@ -1113,7 +1125,7 @@
 
             // defaults to off; can be set by either: the useGzip() method or config{}
             // also: sets to ON automatically if file opened has *.gz extension
-            this.use_gzip   = false; 
+            this.use_gzip   = false;
 
             return server_open( config );
 
@@ -1130,7 +1142,7 @@
                     data = config.data;
             }
 
-            if ( data ) 
+            if ( data )
                 return new db_object( {"platform":"browser",db_name:_name,data:data} );
             else
                 return new db_object( {"platform":"browser",db_name:_name} );
@@ -1145,10 +1157,10 @@
             var parm_list = ['db_name','db_dir','db_path','use_gzip'];
 
             // assume it is either (in this order): path, fullpath, filename
-            if ( arguments.length > 0 && typeof config === "string" ) 
+            if ( arguments.length > 0 && typeof config === "string" )
             {
                 try {
-                    // is file 
+                    // is file
                     var data = fs.readFileSync(config,{encoding:"utf8",flag:'r'}); // throws if Directory or File doesn't exist
 
                     // fullpath
@@ -1158,14 +1170,14 @@
                     // dir
                     that.db_dir = that.db_path.substring(0, that.db_path.lastIndexOf( that.db_name ));
 
-                } 
-                catch(e) 
+                }
+                catch(e)
                 {
-                    switch ( e.code ) 
+                    switch ( e.code )
                     {
                     case "ENOENT":
                         // file not exists: get db_name, db_dir
-                        that.db_path = path.resolve(config); 
+                        that.db_path = path.resolve(config);
                         that.db_name = clip_all_leading( that.db_path.substring( that.db_path.lastIndexOf('/'), that.db_path.length ), '/' );
                         that.db_dir = that.db_path.substring(0, that.db_path.lastIndexOf( that.db_name ));
                         break;
@@ -1181,18 +1193,18 @@
             }
 
             // overwrite from user-supplied config settings
-            else if ( arguments.length > 0 && typeof config === "object" ) 
+            else if ( arguments.length > 0 && typeof config === "object" )
             {
-                for ( var i = 0; i < parm_list.length; i++ ) 
+                for ( var i = 0; i < parm_list.length; i++ )
                 {
                     if ( config[parm_list[i]] ) {
-                        if ( parm_list[i] === "db_path" ) 
+                        if ( parm_list[i] === "db_path" )
                             config[parm_list[i]] = path.resolve( config[parm_list[i]] );
                         else if ( parm_list[i] === "db_dir" )
                             config[parm_list[i]] = path.resolve( config[parm_list[i]] );
                         else if ( parm_list[i] === 'db_name' )
                             config[parm_list[i]] = clip_all_leading( config[parm_list[i]], '/' );
-                        
+
                         that[parm_list[i]] = config[parm_list[i]];
                     }
                 }
@@ -1211,7 +1223,7 @@
                         ++_any_changed;
                     }
                     if ( _any_changed ) {
-                        that.db_path = 0; 
+                        that.db_path = 0;
                     }
                 }
             }
@@ -1223,7 +1235,7 @@
                 else
                     that.db_path = that.db_dir + '/' + that.db_name;
             }
-    
+
             var rows = config && config.data ? config.data : undefined;
 
             return new db_object( {db_path:that.db_path,db_dir:that.db_dir,db_name:that.db_name,"platform":that.platform,use_gzip:that.use_gzip,data:rows} );
