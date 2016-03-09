@@ -175,9 +175,9 @@ If argument is an object, these configuration variable are looked for in it:
 ### Query Operators
 | Name | Status | comment/example |
 | --- | --- | --- |
-| $gt | implemented | `db.find( {a:{$gt:5} );` |
-| $gte | implemented | `db.find( {a:{$gte:100} );` |
-| $in | *not impl* | selects the documents where a field equals any value in an array |
+| $gt | implemented | `db.find( {a:{$gt:5}} );` |
+| $gte | implemented | `db.find( {a:{$gte:100}} );` |
+| $in | implemented |  `db.find( {a:{$in[3,5,7]}} );` |
 | $lt | implemented | |
 | $lte | implemented | |
 | $ne | implemented | Matches all values that are not equal to the value specified in the query `db.find( {a:{$ne:2},b{$ne:3}} ); // select * from table where (a != 2) && (b != 3)` | 
@@ -218,7 +218,7 @@ If argument is an object, these configuration variable are looked for in it:
   * [X] callbacks
   * [] .findOne() 
   * [] better documentation for update() 
-  * [] $in, $nin
+  * [] $nin
   * [] $and, $not, $nor
   * [] $inc, $mul 
   * [] $unset 
