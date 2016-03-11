@@ -137,6 +137,7 @@ U.test( "db.find({$or:[{a:{$in:[2,3]}},{c:{$gt:5}}]})" , '{"length":4,"rows":[{"
 U.p( "\nAND CONDITIONAL:" );
 U.test( "db.find({b:{$gt:3},c:{$lte:5},d:{$lt:6},b:{$gte:5}})", '{"length":1,"rows":[{"_id":5,"b":5,"c":5,"d":5}]}' );
 U.test( "db.find({a:{$in:[2,4]}, c:{$lt:5}})", '{"length":1,"rows":[{"_id":4,"a":4,"b":4,"c":4,"d":4}]}' );
+U.test( "db.find({a:{$in:[2,4]}, c:4})", '{"length":1,"rows":[{"_id":4,"a":4,"b":4,"c":4,"d":4}]}');
 
 U.p("\n\n==========================");
 U.p( JSON.stringify(db.find()) );
