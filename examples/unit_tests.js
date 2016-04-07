@@ -109,11 +109,16 @@ U.p( "simple $gte:" );
 U.test( "db.find({b:{'$gte':4}})", '{"length":2,"rows":[{"_id":4,"a":4,"b":4,"c":4,"d":4},{"_id":5,"b":5,"c":5,"d":5}]}' );
 U.p( "simple $lte:" );
 U.test( "db.find({b:{'$lte':4}})", '{"length":3,"rows":[{"_id":2,"a":2,"b":2},{"_id":3,"a":3,"b":3,"c":3},{"_id":4,"a":4,"b":4,"c":4,"d":4}]}' );
+
+U.p( "simple $in:" );
+U.test( "db.find({a:{'$in':[2,3,4]}})", '{"length":3,"rows":[{"_id":2,"a":2,"b":2},{"_id":3,"a":3,"b":3,"c":3},{"_id":4,"a":4,"b":4,"c":4,"d":4}]}' );
+
 U.p( "reverse sort, numeric:" );
 U.test( "db.find({b:{'$gte':4}}).sort({'_id':-1})", '{"length":2,"rows":[{"_id":5,"b":5,"c":5,"d":5},{"_id":4,"a":4,"b":4,"c":4,"d":4}]}' );
 U.test( "db.insert({name:'Paul'})", 1 );
 U.test( "db.insert({name:'Carol'})", 1 );
 U.test( "db.insert({name:'Zach'})", 1 );
+
 
 U.p( "\nALPHABETICAL SORT:" );
 U.test( "db.find({name:/(.*)/}).sort({name:1})", '{"length":3,"rows":[{"_id":9,"name":"Carol"},{"_id":8,"name":"Paul"},{"_id":10,"name":"Zach"}]}' );
@@ -124,11 +129,15 @@ U.test( "db.find({name:{'$exists':false},'a':{'$exists':false},'b':{'$exists':fa
 
 U.p( "\nAND $exists:true:" );
 U.test( "db.find({a:{$exists:true},b:{$exists:true},c:{$exists:true},d:{$exists:true}})", '{"length":1,"rows":[{"_id":4,"a":4,"b":4,"c":4,"d":4}]}' );
+
 U.p( "\nOR:" );
 U.test( "db.find({$or:[{d:{$exists:true}},{c:{$exists:true}}]}).sort({_id:-1})", '{"length":5,"rows":[{"_id":7,"c":7},{"_id":6,"c":6,"d":6},{"_id":5,"b":5,"c":5,"d":5},{"_id":4,"a":4,"b":4,"c":4,"d":4},{"_id":3,"a":3,"b":3,"c":3}]}' );
+U.test( "db.find({$or:[{a:{$in:[2,3]}},{c:{$gt:5}}]})" , '{"length":4,"rows":[{"_id":2,"a":2,"b":2},{"_id":3,"a":3,"b":3,"c":3},{"_id":6,"c":6,"d":6},{"_id":7,"c":7}]}' );
 
 U.p( "\nAND CONDITIONAL:" );
 U.test( "db.find({b:{$gt:3},c:{$lte:5},d:{$lt:6},b:{$gte:5}})", '{"length":1,"rows":[{"_id":5,"b":5,"c":5,"d":5}]}' );
+U.test( "db.find({a:{$in:[2,4]}, c:{$lt:5}})", '{"length":1,"rows":[{"_id":4,"a":4,"b":4,"c":4,"d":4}]}' );
+U.test( "db.find({a:{$in:[2,4]}, c:4})", '{"length":1,"rows":[{"_id":4,"a":4,"b":4,"c":4,"d":4}]}');
 
 U.p("\n\n==========================");
 U.p( JSON.stringify(db.find()) );
@@ -149,6 +158,7 @@ U.test( "db.find( {a:3,b:{$gt:2},c:{$lt:7}} )", '{"length":1,"rows":[{"_id":3,"a
 
 U.p( "\nAND/OR CONDITIONAL COMBINED:" );
 U.test( "db.find( { c:{$lt:6}, $or: [{a:{$gt:5}},{b:{$lte:4}}] } )", '{"length":2,"rows":[{"_id":3,"a":3,"b":3,"c":3},{"_id":4,"a":4,"b":4,"c":4,"d":4}]}' );
+U.test( "db.find( { c:{$in:[3,5]}, $or : [{d:{$exists:true}},{b:{$gte:5}}] } )", '{"length":1,"rows":[{"_id":5,"b":5,"c":5,"d":5}]}' );
 
 U.p( "\nREMOVE: ");
 U.test( "db.remove( {name:/[A-Z](.*)/} )", 3 );
