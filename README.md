@@ -16,7 +16,7 @@ var queryable = require( 'queryable' );
 var db = queryable.open( "~/code/mydata.db" );
 
 // ..or you can simply name it, which will start an empty db with this name:
-var db = queryable.open( "Database_Name" ); 
+var db = queryable.open( "Database_Name" );
 
 // You can load from a json object that is an Array of Objects.
 var db = queryable.open( {db_name:"name",data: [{key:val,key2:val2},{key:val},...] } );
@@ -51,7 +51,7 @@ console.log( 'got ' + res.length + ' rows' );
 /*
  * a real example - populate from string
  */
-// literal data can be a string or an object 
+// literal data can be a string or an object
 var json_string = '[
   {"name":"Cathy"},
   {"name":"Carol","sex":"f"},
@@ -60,7 +60,7 @@ var json_string = '[
 
 var queryable = require('queryable');
 
-var db = queryable.open({db_name:"MyDatabase",data:json_string}); 
+var db = queryable.open({db_name:"MyDatabase",data:json_string});
 
 // delete a row
 db.remove({name:'Cathy'});
@@ -93,12 +93,12 @@ Callbacks work now too (finally):
 See the 'examples' folder for more examples of usage.
 
 ## Install
-To install using npm: 
+To install using npm:
 
 ```
 npm install queryable
 ```
-To install in your project, appending to your project's `package.json`: 
+To install in your project, appending to your project's `package.json`:
 
 ```
 npm install queryable --save
@@ -112,7 +112,7 @@ To install using git:
 
 ## Test
 
-To run unit-tests: 
+To run unit-tests:
 
 ```
 npm test
@@ -180,7 +180,7 @@ If argument is an object, these configuration variable are looked for in it:
 | $in | implemented |  `db.find( {a:{$in[3,5,7]}} );` |
 | $lt | implemented | |
 | $lte | implemented | |
-| $ne | implemented | Matches all values that are not equal to the value specified in the query `db.find( {a:{$ne:2},b{$ne:3}} ); // select * from table where (a != 2) && (b != 3)` | 
+| $ne | implemented | Matches all values that are not equal to the value specified in the query `db.find( {a:{$ne:2},b{$ne:3}} ); // select * from table where (a != 2) && (b != 3)` |
 | $nin | *not impl* | |
 | | | |
 | $or | implemented | `db.find( {$or:[{n:1},{y:{$gte:3}}]} ) //return all results where (n == 1) or (y >= 3)` |
@@ -212,17 +212,17 @@ If argument is an object, these configuration variable are looked for in it:
 
 ## In the Works
 1. Better documentation (still working on it); Website (not quite yet).
- 
+
 2. Feature Roadmap: which features will be implemented next, roughly in order.
-  * [X] better documentation for open() 
+  * [X] better documentation for open()
   * [X] callbacks
-  * [] .findOne() 
-  * [] better documentation for update() 
+  * [] .findOne()
+  * [] better documentation for update()
   * [] $nin
   * [] $and, $not, $nor
-  * [] $inc, $mul 
-  * [] $unset 
-  * [] $rename 
+  * [] $inc, $mul
+  * [] $unset
+  * [] $rename
   * [] update().limit()
   * [] remove().limit()
   * [] $min, $max
@@ -247,5 +247,5 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-## Contact 
-Mail: greg@naughton.org for questions, comments, bugs
+## Contact
+Mail: _greg AT naughton DOT org_ for questions, comments, bugs
